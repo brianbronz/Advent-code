@@ -1,4 +1,9 @@
-.txt
-.DS_Store
-.vscode
-.o
+**/*.txt
+**/*.DS_Store
+**/*.vscode
+**/*.o
+**/*main
+**/*.out
+**/main
+**/main2
+**/*.js
