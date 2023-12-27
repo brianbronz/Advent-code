@@ -1,9 +1,5 @@
 #include "../Allreference.h"
 
-/**
- * Part 1: 518985
-Part 2: 259986
-*/
 int hashAlgorithm(string str) {
     int result = 0;
     for (int i = 0; i < str.size(); i++) {
@@ -20,16 +16,20 @@ int readFiles(istream & input, const char * argv){
     //get all lines
     vector<string> splitted;
     while(getline(input, block, ',')){
+        cout << block << endl;
         splitted.push_back(block);
     };
+    cout << splitted.size() << endl;
     int total = 0;
+    ofstream f("output.txt");
     for (int i = 0; i < splitted.size(); i++) {
-        cout << hashAlgorithm(splitted[i]) << endl;
         total += hashAlgorithm(splitted[i]);
+        f << total << " " << splitted[i] << endl;;
     }
     cout << total << endl;
 }
 int main(int argc, char * argv[]) {
+    cout << hashAlgorithm("pdnq=8");
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);
@@ -40,7 +40,7 @@ int main(int argc, char * argv[]) {
     } else {
         if(!readFiles(cin, "{stdin}"))
             return EXIT_FAILURE;
-    } 
+    }
 
     return 0;
 }

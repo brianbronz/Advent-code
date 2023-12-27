@@ -6,8 +6,6 @@ struct node{
 };
 
 vector<struct node*> visited;
-bool lastIndex = false;
-
 bool isVisited(int initX, int initY){
     for(int i = 0; i < visited.size(); i++){
         if(visited[i]->x == initX && visited[i]->y == initY){
@@ -22,19 +20,19 @@ struct node * initAnewStruct(int initX, int initY){
     newN->y = initY;
     return newN;
 }
-
+//Colonne e righe invertite
 void nextMoves(int initX, int initY, string direction, vector<string> & splitted){
-    cout << visited.size() << endl;
+    cout << initX << " " << initY << " " << splitted[initX][initY] << " " << direction <<endl;
     if(direction == "E"){
         if(initX + 1 < splitted[0].size()){
             if(!isVisited(initX + 1, initY)){
                 struct node * newNode = initAnewStruct(initX + 1, initY);
                 visited.push_back(newNode);
-                initX++; 
-            } else if(splitted[initX][initY] != '.') {return;}
+            }
+            initX++; 
             if(splitted[initX][initY] == '/'){
                 nextMoves(initX, initY, "N", splitted);
-            } else if(splitted[initX][initY] == '\\'){
+            } else if(splitted[initX][initY] == '\\' ){
                 nextMoves(initX, initY, "S", splitted);
             } else if(splitted[initX][initY] == '|'){
                 nextMoves(initX, initY, "S", splitted);
@@ -50,8 +48,8 @@ void nextMoves(int initX, int initY, string direction, vector<string> & splitted
             if(!isVisited(initX, initY - 1)){
                 struct node * newNode = initAnewStruct(initX, initY - 1);
                 visited.push_back(newNode);
-                initY--; 
-            } else if(splitted[initX][initY] != '.'){return;}
+            }
+            initY--; 
             if(splitted[initX][initY] == '/'){
                 nextMoves(initX, initY, "E", splitted);
             } else if(splitted[initX][initY] == '\\'){
@@ -70,8 +68,8 @@ void nextMoves(int initX, int initY, string direction, vector<string> & splitted
             if(!isVisited(initX - 1, initY)){
                 struct node * newNode = initAnewStruct(initX - 1, initY);
                 visited.push_back(newNode);
-                initX--; 
-            }else if(splitted[initX][initY] != '.'){return;}
+            }
+            initX--; 
             if(splitted[initX][initY] == '/'){
                 nextMoves(initX, initY, "S", splitted);
             } else if(splitted[initX][initY] == '\\'){
@@ -90,8 +88,8 @@ void nextMoves(int initX, int initY, string direction, vector<string> & splitted
             if(!isVisited(initX, initY + 1)){
                 struct node * newNode = initAnewStruct(initX, initY + 1);
                 visited.push_back(newNode);
-                initY++; 
-            }else if(splitted[initX][initY + 1] != '.') {return;}
+            }
+            initY++; 
             if(splitted[initX][initY] == '/'){
                 nextMoves(initX, initY, "W", splitted);
             } else if(splitted[initX][initY] == '\\'){
@@ -113,12 +111,7 @@ void part1(vector<string> & splitted){
     string initialDirection = "E";
     int initX = 0;
     int initY = 0;
-    while(true){
-        int previousSize = visited.size();
-        nextMoves(initX, initY, initialDirection, splitted);
-        int newSize = visited.size();
-        if(newSize == previousSize){break;}
-    }
+    nextMoves(initX, initY, initialDirection, splitted);
     cout << visited.size() << endl;
 }
 int readFiles(istream & input, const char * argv){
@@ -128,7 +121,14 @@ int readFiles(istream & input, const char * argv){
     while(getline(input, block)){
         splitted.push_back(block);
     };
-
+    vector<string> a;
+    for (int i = 0; i < splitted.size(); i++){
+        string temp;
+        for (int j = 0; j < splitted[i].size(); j++){
+            temp += splitted[j][i];
+        }
+        a.push_back(temp);
+    }
     part1(splitted);
     
 }
