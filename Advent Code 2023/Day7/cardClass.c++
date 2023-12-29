@@ -1,6 +1,5 @@
 #include "../Allreference.h"
 map<string, int> cardValues;
-
 void addToMap(){
     cardValues.insert(make_pair("2", 2));
     cardValues.insert(make_pair("3", 3));
@@ -15,9 +14,9 @@ void addToMap(){
     cardValues.insert(make_pair("Q", 12));
     cardValues.insert(make_pair("K", 13));
     cardValues.insert(make_pair("A", 14));
-};
-
-vector<int> HighCard(string cards){
+}
+string HighCard(string cards){
+    addToMap();
     vector<int> res;
     for (int i = 0; i < cards.size(); i++){
         string temp(1, cards[i]);
@@ -25,11 +24,15 @@ vector<int> HighCard(string cards){
         res.push_back(value);
     }
     sort(res.begin(), res.end(), greater<int>());
-    res.push_back(1);
-    return res;
+    string finalRes;
+    for(int i = 0; i < res.size(); i++){
+        finalRes += to_string(res[i]);
+    }
+    return finalRes;
 }
 
-vector<int> Pair(string cards){
+string Pair(string cards){
+    addToMap();
     int identicNumb = 0;
     vector<int> res;
     for (int i = 0; i < cards.size() - 1; i++){
@@ -46,7 +49,7 @@ vector<int> Pair(string cards){
     }
     res.push_back(identicNumb);
     res.push_back(identicNumb);
-    vector<int> tempRes;
+    string tempRes;
     for (int i = 0; i < cards.size(); i++){
         string temp1(1, cards[i]);
         int value = cardValues[temp1];
@@ -58,11 +61,15 @@ vector<int> Pair(string cards){
     for (int i = 0; i < tempRes.size(); i++){
         res.push_back(tempRes[i]);
     }
-    res.push_back(2);
-    return res;
+    string finalRes;
+    for(int i = 0; i < res.size(); i++){
+        finalRes += to_string(res[i]);
+    }
+    return finalRes;
 }
 
-vector<int> DoublePair(string cards){
+string DoublePair(string cards){
+    addToMap();
     vector<int> pairInfo;
     vector<int> res;
     for (int i = 0; i < cards.size() - 1; i++){
@@ -94,11 +101,16 @@ vector<int> DoublePair(string cards){
             }
         }
     }
-    res.push_back(3);
-    return res;
+    string finalRes;
+    for(int i = 0; i < res.size(); i++){
+        finalRes += to_string(res[i]);
+    }
+    return finalRes;
 }
 
-vector<int> ThreeOfAKind(string cards){
+string ThreeOfAKind(string cards){
+    addToMap();
+    cout << cards << endl;
     vector<int> res;
     int stopLoop = 0;
     for (int i = 0; i < cards.size() - 1; i++){
@@ -112,6 +124,7 @@ vector<int> ThreeOfAKind(string cards){
                 res.push_back(value);
                 res.push_back(value);
                 res.push_back(value);
+                cout << value << endl;
                 break;
             }
         }
@@ -125,7 +138,6 @@ vector<int> ThreeOfAKind(string cards){
             temp.push_back(value);
         }
     }
-
     if (temp[0] < temp[1]){
         res.push_back(temp[1]);
         res.push_back(temp[0]);
@@ -133,12 +145,17 @@ vector<int> ThreeOfAKind(string cards){
         res.push_back(temp[0]);
         res.push_back(temp[1]);
     }
-    res.push_back(4);
-    return res;
+    string finalRes = "";
+    for(int i = 0; i < res.size(); i++){
+        cout << res[i] << endl;
+        finalRes += to_string(res[i]);
+    }
+    return finalRes;
 }
 
 
-vector<int> FullHouse(string cards){
+string FullHouse(string cards){
+    addToMap();
     vector<int> res;
     vector<int> info;
     //22333 || 33223
@@ -173,11 +190,15 @@ vector<int> FullHouse(string cards){
         res.push_back(info[0]);
         res.push_back(info[0]);
     }
-    res.push_back(5);
-    return res;
+    string finalRes;
+    for(int i = 0; i < res.size(); i++){
+        finalRes += to_string(res[i]);
+    }
+    return finalRes;
 }
 
-vector<int> Poker(string cards){
+string Poker(string cards){
+    addToMap();
     vector<int> res;
     int stopLoop = 0;
     for (int i = 0; i < cards.size() - 1; i++){
@@ -204,17 +225,9 @@ vector<int> Poker(string cards){
             res.push_back(value);
         }
     }
-    res.push_back(6);
-    return res;
-}
-
-vector<int> FiveOfAKind(string cards){
-    vector<int> res;
-    string tempValue(1, cards[0]);
-    int value = cardValues[tempValue];
-    for (int i = 0; i < 5; i++){
-        res.push_back(value);
+    string finalRes;
+    for(int i = 0; i < res.size(); i++){
+        finalRes += to_string(res[i]);
     }
-    res.push_back(7);
-    return res;
+    return finalRes;
 }

@@ -1,117 +1,130 @@
 #include "../Allreference.h"
 #include "cardClass.c++"
-#include "cardClass.h"
+#include <algorithm>
+enum class Type{HighCard, OnePair, TwoPairs, ThreeOfAKind, FullHouse, Poker, FiveOfaKind,};
 
-
-struct database{
-    vector<struct CardValue *> cv;
-};
-struct database * db = new(database);
-
-struct CardValue{
-    int rank;
-    vector<int> power;
-    string Hands;
-    string bid;
-    int typeOfHand;
+struct Hand{
+    string value;
+    int bid;
+    Type type = Type::HighCard;
 };
 
+vector<struct Hand *> listHand;
+vector<char> strengths;
 
-vector<int> givePower(string cards){
-    int repeatCard = 0;
-    vector<int> result;
-    for (int i = 0; i < cards.size() - 1; i++){
-        for (int j = i +1; j < cards.size(); j++){
-            if (cards[i] == cards[j]){
-                repeatCard++;
-            }
-        }
+Type GetHandType(string hand){
+    // Count the number of each card
+    unordered_map<char, int> cardCounts;
+    for (char card : hand){
+        cardCounts[card]++;
     }
-    if (repeatCard == 0){
-        //Nothing
-        //Take the highest value
-        return HighCard(cards);
-    } else if (repeatCard == 1){
-        //One pair
-        //Take the highest value
-        return Pair(cards);
-    } else if(repeatCard == 2){
-        //double Pair
-        return DoublePair(cards);
 
-    } else if(repeatCard == 3){
-        //Three of a kind
-        return ThreeOfAKind(cards);
-    } else if(repeatCard == 4){
-        //Full house
-        return FullHouse(cards);
-    } else if (repeatCard == 6){
-        return Poker(cards);
+    // Then count the number of each count (ex. countCounts[2] == 2 means 2 pairs)
+    unordered_map<int, int> countCounts;
+    for (const auto& [card, count] : cardCounts){
+        countCounts[count]++;
+    }
+
+    // Determine type based on counts of counts
+    if (countCounts[5] == 1){
+        return Type::FiveOfaKind;
+    }
+    else if (countCounts[4] == 1){
+        return Type::Poker;
+    } else if (countCounts[3] == 1 && countCounts[2] == 1) {
+        return Type::FullHouse;
+    } else if (countCounts[3] == 1){
+        return Type::ThreeOfAKind;
+    } else if (countCounts[2] == 2){
+        return Type::TwoPairs;
+    } else if (countCounts[2] == 1) {
+        return Type::OnePair;
     } else {
-        //Five Hand
-        return FiveOfAKind(cards);
+        return Type::HighCard;
     }
 }
 
 int readFiles(istream & input, const char * argv){
     string block;
     while(getline(input, block)){
-        int posSpace = block.find(" ");
-        string cards = block.substr(0, posSpace);
-        string bid = block.substr(posSpace + 1);
-        struct CardValue * c = new (CardValue);
-        c->bid = bid;
-        c->Hands = cards;
-        c->rank = 0;
-        vector<int> temp = givePower(cards);
-        vector<int> p;
-        for (int i = 0; i < temp.size() - 1; i++){
-            p.push_back(temp[i]);
+        stringstream ss(block);
+        vector<string> content;
+        string temp;
+        while(ss >> temp){
+            content.push_back(temp);
         }
-        c->power = p;
-        c->typeOfHand = temp[temp.size() - 1];
-        db->cv.push_back(c);
-        temp.clear();
-        p.clear();
+        struct Hand* newHand = new(Hand);
+        newHand->bid = stoi(content[1]);
+        newHand->value = content[0];
+        newHand->type = GetHandType(content[0]);
+        listHand.push_back(newHand);
     }
-    return 1;
+    return -1;
 }
 
-void condition(){
-    for (int i = 0; i < db->cv.size() - 1; i++){
-        for (int j = i + 1; j < db->cv.size(); j++){
-            if (db->cv[i]->typeOfHand > db->cv[j]->typeOfHand){
-                swap(db->cv[i], db->cv[j]);
-            } else if(db->cv[i]->typeOfHand == db->cv[j]->typeOfHand){
-                for (int l = 0; l < db->cv[i]->power.size(); l++){
-                    if (db->cv[i]->power[l] > db->cv[j]->power[l]){
-                        swap(db->cv[i], db->cv[j]);
-                        break;
-                    }
-                }
+int check(char value, vector<char> power){
+    for(int i = 0; i < power.size(); i++){
+        if(value == power[i]){return i;}
+    }
+    return 0;
+}
+
+string orderTheHand(struct Hand * hand){
+    string res;
+    if(hand->type == Type::FullHouse){
+        res = FullHouse(hand->value);
+    } else if(hand->type == Type::HighCard){
+        res = HighCard(hand->value);
+    } else if(hand->type == Type::OnePair){
+        res = Pair(hand->value);
+    } else if(hand->type == Type::Poker){
+        res = Poker(hand->value);
+    } else if(hand->type == Type::ThreeOfAKind){
+        res = ThreeOfAKind(hand->value);
+    } else {
+        res = DoublePair(hand->value);
+    }
+    return res;
+}
+
+void part1(){
+    // Sort hands by increasing rank
+    strengths.push_back('2');
+    strengths.push_back('3');
+    strengths.push_back('4');
+    strengths.push_back('5');
+    strengths.push_back('6');
+    strengths.push_back('7');
+    strengths.push_back('8');
+    strengths.push_back('9');
+    strengths.push_back('T');
+    strengths.push_back('J');
+    strengths.push_back('Q');
+    strengths.push_back('K');
+    strengths.push_back('A');
+    for(int i = 0; i < listHand.size(); i++){
+        string temp = orderTheHand(listHand[i]);
+        listHand[i]->value = temp;
+    }
+    for (int i = 0; i < listHand.size() - 1; i++){
+        for (int j = i + 1; j < listHand.size(); j++){
+            if(listHand[i]->type == listHand[j]->type){
+                //method for the swap
+            }
+            if(listHand[i]->type > listHand[j]->type){
+                swap(listHand[i], listHand[j]);
             }
         }
     }
-}
-
-void compare(){
-    condition();
-    for (int i = 0; i < db->cv.size(); i++){
-        db->cv[i]->rank = i + 1; 
+    int64_t acc = 0;
+    for (int i = 0; i < listHand.size(); ++i){
+        cout << listHand[i]->value << endl;
+        acc += listHand[i]->bid * (i + 1);
     }
-}
-
-void total(){
-    int sums = 0;
-    for (int i = 0; i < db->cv.size(); i++){
-        sums += stoi(db->cv[i]->bid) * db->cv[i]->rank;
-    }
-    cout << sums << endl;
+    cout << acc;
 }
 
 int main(int argc, char * argv[]){
-    cout << argv[1] << endl; 
-    addToMap();
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);
@@ -122,15 +135,7 @@ int main(int argc, char * argv[]){
     } else {
         if(!readFiles(cin, "{stdin}"))
             return EXIT_FAILURE;
-    }
-
-    compare();
-    total();
-    db->cv.clear();
-    delete db;
+    } 
+    part1();
     return 0;
-    /*
-    249152041
-    248836197
-    */
 }
