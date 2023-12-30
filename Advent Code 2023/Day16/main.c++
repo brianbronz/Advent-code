@@ -1,118 +1,98 @@
 #include "../Allreference.h"
 
-struct node{
-    int x;
-    int y;
-};
+enum Direction{North, South, East, West};
+Direction initialDirection = East;
+int initX = 0;
+int initY = 0;
 
-vector<struct node*> visited;
-bool isVisited(int initX, int initY){
-    for(int i = 0; i < visited.size(); i++){
-        if(visited[i]->x == initX && visited[i]->y == initY){
-            return true;
+bool check(int cx, int cy, vector<string> splitted, int y, int x, Direction cd, Direction d, bool start){
+    return (cx < 0 || cy < 0 || cy >= splitted.size() || cx >= splitted.size() 
+            || (cx == x && cy == y && cd == d && !start));
+}
+
+void visit(int x, int y, Direction dir, vector<string> splitted, vector<vector<int> > &visited){
+    int currentX = x;
+    int currentY = y;
+    Direction currentDirection = dir;
+    bool started = true;
+    while (true){
+        if (check(currentX, currentY, splitted, y, x, currentDirection, dir, started)){
+            return;
+        }
+        bool visitedBefore = visited[currentY][currentX] == 1;
+        visited[currentY][currentX] = 1;
+        char terrain = splitted[currentY][currentX];
+        Direction nextDirection = currentDirection;
+
+        if (terrain == '\\') {
+            if (currentDirection == North) {nextDirection = West;} 
+            else if (currentDirection == East) {nextDirection = South;} 
+            else if (currentDirection == West) {nextDirection = North;} 
+            else if (currentDirection == South) {nextDirection = East;}
+        } else if (terrain == '/') {
+            if (currentDirection == North) {nextDirection = East;} 
+            else if (currentDirection == East) {nextDirection = North;} 
+            else if (currentDirection == West) {nextDirection = South;} 
+            else if (currentDirection == South) {nextDirection = West;}
+        } else if (terrain == '|') {
+            if (currentDirection == West || currentDirection == East) {
+                if (!visitedBefore) {
+                    visit(currentX, currentY - 1, North, splitted, visited);
+                    visit(currentX, currentY + 1, South, splitted, visited);
+                }
+                return;
+            } else {nextDirection = currentDirection;}
+        } else if (terrain == '-') {
+            if (currentDirection == South || currentDirection==North) {
+                if (!visitedBefore) {
+                    visit(currentX - 1, currentY, West, splitted, visited);
+                    visit(currentX + 1, currentY, East, splitted, visited);
+                }
+                return;
+            } else {nextDirection = currentDirection;}
+        }
+        if (nextDirection == West) {currentX = currentX - 1;} 
+        else if (nextDirection == East) {currentX = currentX + 1;}
+
+        if (nextDirection == North) {currentY = currentY - 1;} 
+        else if (nextDirection == South) {currentY = currentY + 1;}
+        currentDirection = nextDirection;
+    }
+}
+int nextMoves(int x, int y, Direction direction, vector<string> splitted){
+    static vector< vector<int> > visitedNode(splitted.size(), vector<int>(splitted.size(), 0));
+    for (auto it = visitedNode.begin(); it != visitedNode.end(); ++it) {
+        for (auto innerIt = it->begin(); innerIt != it->end(); ++innerIt) {
+            *innerIt = 0;
         }
     }
-    return false;
-}
-struct node * initAnewStruct(int initX, int initY){
-    struct node * newN = new(node);
-    newN->x = initX;
-    newN->y = initY;
-    return newN;
-}
-//Colonne e righe invertite
-void nextMoves(int initX, int initY, string direction, vector<string> & splitted){
-    cout << initX << " " << initY << " " << splitted[initX][initY] << " " << direction <<endl;
-    if(direction == "E"){
-        if(initX + 1 < splitted[0].size()){
-            if(!isVisited(initX + 1, initY)){
-                struct node * newNode = initAnewStruct(initX + 1, initY);
-                visited.push_back(newNode);
-            }
-            initX++; 
-            if(splitted[initX][initY] == '/'){
-                nextMoves(initX, initY, "N", splitted);
-            } else if(splitted[initX][initY] == '\\' ){
-                nextMoves(initX, initY, "S", splitted);
-            } else if(splitted[initX][initY] == '|'){
-                nextMoves(initX, initY, "S", splitted);
-                nextMoves(initX, initY, "N", splitted);
-            } else if(splitted[initX][initY] == '-' || splitted[initX][initY] == '.'){
-                nextMoves(initX, initY, "E", splitted);
-            }
-        } else{
-            return;
+    visit(x, y, direction, splitted, visitedNode);
+    long totalSum = 0;
+    for (const auto &row : visitedNode) {
+        for (int i = 0; i < row.size(); i++){
+            totalSum += row[i];
         }
-    } else if(direction == "N"){
-        if(initY - 1 >= 0){
-            if(!isVisited(initX, initY - 1)){
-                struct node * newNode = initAnewStruct(initX, initY - 1);
-                visited.push_back(newNode);
-            }
-            initY--; 
-            if(splitted[initX][initY] == '/'){
-                nextMoves(initX, initY, "E", splitted);
-            } else if(splitted[initX][initY] == '\\'){
-                nextMoves(initX, initY, "W", splitted);
-            } else if(splitted[initX][initY] == '|' || splitted[initX][initY] == '.'){
-                nextMoves(initX, initY, "N", splitted);
-            } else if(splitted[initX][initY] == '-'){
-                nextMoves(initX, initY, "E", splitted);
-                nextMoves(initX, initY, "W", splitted);
-            }
-        } else{
-            return;
-        }
-    } else if(direction == "W"){
-        if(initX - 1 >= 0){
-            if(!isVisited(initX - 1, initY)){
-                struct node * newNode = initAnewStruct(initX - 1, initY);
-                visited.push_back(newNode);
-            }
-            initX--; 
-            if(splitted[initX][initY] == '/'){
-                nextMoves(initX, initY, "S", splitted);
-            } else if(splitted[initX][initY] == '\\'){
-                nextMoves(initX, initY, "N", splitted);
-            } else if(splitted[initX][initY] == '|'){
-                nextMoves(initX, initY, "S", splitted);
-                nextMoves(initX, initY, "N", splitted);
-            } else if(splitted[initX][initY] == '-' || splitted[initX][initY] == '.'){
-                nextMoves(initX, initY, "W", splitted);
-            }
-        } else{
-            return;
-        }
-    } else if(direction == "S"){
-        if(initY + 1 < splitted.size()){
-            if(!isVisited(initX, initY + 1)){
-                struct node * newNode = initAnewStruct(initX, initY + 1);
-                visited.push_back(newNode);
-            }
-            initY++; 
-            if(splitted[initX][initY] == '/'){
-                nextMoves(initX, initY, "W", splitted);
-            } else if(splitted[initX][initY] == '\\'){
-                nextMoves(initX, initY, "E", splitted);
-            } else if(splitted[initX][initY] == '|' || splitted[initX][initY] == '.'){
-                nextMoves(initX, initY, "S", splitted);
-            } else if(splitted[initX][initY] == '-'){
-                nextMoves(initX, initY, "E", splitted);
-                nextMoves(initX, initY, "W", splitted);
-            }
-        } else{
-            return;
-        }
-    } else {
-        return;
     }
+    return totalSum;
+
 }
 void part1(vector<string> & splitted){
-    string initialDirection = "E";
-    int initX = 0;
-    int initY = 0;
-    nextMoves(initX, initY, initialDirection, splitted);
-    cout << visited.size() << endl;
+    cout << nextMoves(initX, initY, initialDirection, splitted) << endl;
+}
+
+void part2(vector<string> splitted){
+    vector<int> results;
+    for (int i = 0; i < splitted.size(); i++){
+        results.push_back(nextMoves(i, 0, South, splitted));
+        results.push_back(nextMoves(i, splitted.size() - 1, North, splitted));
+        results.push_back(nextMoves(0, i, East, splitted));
+        results.push_back(nextMoves(splitted.size() - 1, i, West, splitted));
+    }
+    int maxResult = 0;
+    for(int i = 0; i < results.size(); i++){
+        if(results[i] > maxResult){maxResult = results[i];}
+    }
+    cout << maxResult << endl;;
 }
 int readFiles(istream & input, const char * argv){
     string block;
@@ -121,16 +101,10 @@ int readFiles(istream & input, const char * argv){
     while(getline(input, block)){
         splitted.push_back(block);
     };
-    vector<string> a;
-    for (int i = 0; i < splitted.size(); i++){
-        string temp;
-        for (int j = 0; j < splitted[i].size(); j++){
-            temp += splitted[j][i];
-        }
-        a.push_back(temp);
-    }
+
     part1(splitted);
-    
+    part2(splitted);
+    return -1;
 }
 int main(int argc, char * argv[]) {
     if (argc > 1){
