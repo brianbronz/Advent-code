@@ -94,7 +94,6 @@ int readFiles(istream & input, const char * argv){
         steps(b, "W");
         steps(b, "S");
         steps(b, "E");
-        cout << i << endl;
     }
     int totalLoad2 = Load(b);
     cout << totalLoad2 << endl;

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <ctype.h>
@@ -16,6 +17,7 @@
 #include <stdio.h>
 #include <string>
 #include <sys/types.h>
+#include <tuple>
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
