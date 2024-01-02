@@ -86,7 +86,7 @@ void part1(){
             int minX2 = min(ps[i]->x2, ps[j]->x2);
             int maxY1 = max(ps[i]->y1, ps[j]->y1);
             int minY2 = min(ps[i]->y2, ps[j]->y2);
-            if(maxX1 <= minX2 && maxY1 <= minY2){
+            if(maxX1 <= minX2 && maxY1 <= minY2 && ps[i]->z1 == ps[j]->z2 + 1){
                 supports[j].insert(i);
                 supported[i]++;
             }
@@ -141,8 +141,7 @@ int main(int argc, char * argv[]){
         if(!readFiles(cin, "{stdin}"))
             return EXIT_FAILURE;
     } 
-
-    movement();
+    //968 troppo alto
     part1();
     return 0;
 }

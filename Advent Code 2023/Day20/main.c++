@@ -55,7 +55,9 @@ void addToDb(string block){
         newMd->name = vLines[0];
     }
     for(int i = 2; i < vLines.size(); i++){
-        newMd->dest.push_back(vLines[i].substr(0, 2));
+        string temp = vLines[i].substr(0, 3);
+        if(temp.back() == ','){temp.pop_back();}
+        newMd->dest.push_back(temp);
     }
     md.push_back(newMd);
 }
@@ -70,7 +72,8 @@ int readFiles(istream & input, const char * argv){
     return 1;
 }
 
-void changePulse(int j, int typePulse){
+void changePulse(int j, int &typePulse){
+    //cout << typePulse << endl;
     if(md[j]->type == "%"){
         if(!typePulse){
             if(md[j]->isActive){
@@ -106,7 +109,7 @@ void changePulse(int j, int typePulse){
     }
 }
 
-void findModule(vector<string> tempDest, int typePulse){
+void findModule(vector<string> &tempDest, int &typePulse){
     for(int i = 0; i < tempDest.size(); i++){
         for(int j = 0; j < md.size(); j++){
             if(tempDest[i] == md[j]->name){
@@ -125,14 +128,8 @@ void sendPulse(){
         int typePulse = 0;
         for(int j = 0; j < md.size(); j++){
             if(start == md[j]->name){
-                vector<string> tempDest;
-                for(int k = 0; md[j]->dest.size(); k++){
-                    cout << md[j]->dest[k] << endl;
-                    tempDest.push_back(md[j]->dest[k]);
-                }
+                vector<string> tempDest = md[j]->dest;
                 findModule(tempDest, typePulse);
-                if(md[j]->sendPulse){high++;} else {low++;}
-                
             }
         }
     }
@@ -151,7 +148,13 @@ int main(int argc, char * argv[]) {
         if(!readFiles(cin, "{stdin}"))
             return EXIT_FAILURE;
     } 
-
     sendPulse();
+    for(int i = 0; i < md.size(); i++){
+        //cout << md[i]->type << md[i]->name;
+        for(int j = 0; j < md[i]->dest.size(); j++){
+            //cout << " " << md[i]->dest[j];
+        }
+        //cout << endl;
+    }
     return 0;
 }

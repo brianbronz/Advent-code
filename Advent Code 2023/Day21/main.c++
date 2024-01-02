@@ -9,55 +9,69 @@ struct initialPos{
 
 struct initialPos * init = new(initialPos);
 
+
 int readFiles(istream & input, const char * argv){
     string block;
-    int numRow = 0;
     while(getline(input, block)){
         grid.push_back(block);
-        for(int i = 0; i < block.size(); i++){
-            if(block[i] == 'S'){
-                init->x = numRow;
-                init->y = i;
-                grid[numRow][i] = '.';
+    } 
+    for(int i = 0; i < grid.size(); i++){
+        for(int j = 0; j < grid[i].size(); j++){
+            if(grid[i][j] == 'S'){
+                init->x = i;
+                init->y = j;
+                grid[i][j] = '0';
             }
         }
-        numRow++;
-    } 
-
+    }
     return -1;
 }
 
-void updatePos(unordered_set<struct initialPos *> &pos){
-    unordered_set<struct initialPos *> p;
-    for(auto &ps : pos){
-        int initX = ps->x;
-        int initY = ps->y;
-        cout << initX << " " << initY << endl;
-        //cout << grid[initX][initY] << endl;
-        struct initialPos * currentPs = new(initialPos);
-        currentPs->y = initY;
-        if(initX > 0 && grid[initX - 1][initY] != '#'){
-            currentPs->x = initX - 1;
-            p.insert(currentPs);
-        }
-        
-        if(initX < grid.size() - 1 && grid[initX + 1][initY] != '#'){
-            currentPs->x = initX + 1;
-            p.insert(currentPs);
-        }
 
-        currentPs->x = initX;
-        if(initY > 0 && grid[initX][initY - 1] != '#'){
-            currentPs->y = initY - 1;
-            p.insert(currentPs);
-        }
+bool check(int x, int y){
+    return (x >= 0 && x < grid.size() && y >= 0 && y < grid.size() && grid[x][y] != '#');
+}
 
-        if(initY < grid[0].size() - 1 && grid[initX][initY + 1] != '#'){
-            currentPs->y = initY + 1;
-            p.insert(currentPs);
+void addToPS(vector<struct initialPos *> &ps, int x, int y){
+    bool notFound = false; 
+    for(int i = 0; i < ps.size(); i++){
+        if(x == ps[i]->x && y == ps[i]->y){
+            notFound = true;
+            break;
         }
     }
-    pos = p;
+    if(!notFound){
+        struct initialPos * newPs = new(initialPos);
+        newPs->x = x;
+        newPs->y = y;
+        ps.push_back(newPs);
+    }
+}
+int total = 0;
+void Steps(vector<struct initialPos *> &pos){
+    vector<struct initialPos *> ps;
+    for(int i = 0; i < pos.size(); i++){
+        int initX = pos[i]->x;
+        int initY = pos[i]->y;
+        if(check(initX + 1, initY)){
+            addToPS(ps, initX + 1, initY);
+            grid[initX + 1][initY] = '.';
+        } 
+        if(check(initX - 1, initY)){
+            addToPS(ps, initX - 1, initY);
+            grid[initX - 1][initY] = '.';
+        } 
+        if(check(initX, initY + 1)){
+            addToPS(ps, initX, initY + 1);
+            grid[initX][initY + 1] = '.';
+        } 
+        if(check(initX, initY - 1)){
+            addToPS(ps, initX, initY - 1);
+            grid[initX][initY - 1] = '.';
+        }
+    }
+    pos = ps;
+    total = pos.size();
 }
 
 int main(int argc, char * argv[]){
@@ -72,13 +86,12 @@ int main(int argc, char * argv[]){
         if(!readFiles(cin, "{stdin}"))
             return EXIT_FAILURE;
     } 
-    unordered_set<struct initialPos *> ps;
-    ps.insert(init);
-    int steps = 64;
-    while(steps > 0){
-        updatePos(ps);
-        steps--;
+    vector<struct initialPos *> ps;
+    ps.push_back(init);
+    for(int i = 0; i < 64; i++){
+        Steps(ps);
+        cout << endl;
     }
-    cout << ps.size() << endl;
+    cout << ps.size()<< endl;
     return 0;
 }
