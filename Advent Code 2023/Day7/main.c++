@@ -110,6 +110,35 @@ void part1(){
         for (int j = i + 1; j < listHand.size(); j++){
             if(listHand[i]->type == listHand[j]->type){
                 //method for the swap
+                cout << listHand[i]->value << " "<< listHand[j]->value << endl;
+                int currentK = 0;
+                int currentL = 0;
+                string first = "";
+                string second = "";
+                while(true){
+                    if(listHand[i]->value[currentK] == '1'){
+                            first = listHand[i]->value[currentK];
+                            first += listHand[i]->value[currentK + 1];
+                            currentK += 2;
+                    } else {
+                        first = listHand[i]->value[currentK];
+                        currentK++;
+                    }
+                    if(listHand[j]->value[currentL] == '1'){
+                            second = listHand[j]->value[currentL];
+                            second += listHand[j]->value[currentL + 1];
+                            currentL +=  2;
+                    } else {
+                        second = listHand[j]->value[currentL];
+                        currentL++;
+                    }
+                    if(stoi(first) > stoi(second)){
+                        swap(listHand[i], listHand[j]);
+                        break;
+                    }
+                    if(stoi(first) < stoi(second)){break;}
+                }
+
             }
             if(listHand[i]->type > listHand[j]->type){
                 swap(listHand[i], listHand[j]);
@@ -118,7 +147,6 @@ void part1(){
     }
     int64_t acc = 0;
     for (int i = 0; i < listHand.size(); ++i){
-        cout << listHand[i]->value << endl;
         acc += listHand[i]->bid * (i + 1);
     }
     cout << acc;
