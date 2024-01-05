@@ -41,7 +41,7 @@ void part1(){
             string horizontal = ":" + to_string(x) +  to_string(y) ;
             graph[":" + to_string(x)  + to_string(y)] = make_pair(INT_MAX, map<string, int>());
             graph[":" + to_string(x) +  to_string(y)] = make_pair(INT_MAX, map<string, int>());
-            for (int i = 1; i <= 3; i++) {
+            for (int i = 4; i <= 10; i++) {
                 if (y + i >= 0 && y + i < rows)
                     graph[vertical].second[to_string(x) + to_string(y + i)] = accumulate(input2[y + i].begin(), input2[y + i].end(), 0);
                 if (y - i >= 0 && y - i < rows)
