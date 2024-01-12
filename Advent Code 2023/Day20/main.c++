@@ -1,160 +1,183 @@
+#include <iostream>
+#include <deque>
+#include <unordered_map>
+#include <cmath>
+#include <set>
+#include <numeric>
+
 #include "../Allreference.h"
+template<typename T>
+T lcm(T a, T b) {
+    return lcm(a, b);
+}
+class Module {
+public:
+    string id;
+    vector<string> connections;
+    bool enabled;
+    unordered_map<string, bool> inputs;
 
-/**
- * Flip-flop modules (prefix %) are either on or off; 
- * they are initially off. If a flip-flop module receives a high pulse, 
- * it is ignored and nothing happens.
- *  However, if a flip-flop module receives a low pulse, 
- * it flips between on and off. If it was off, 
- * it turns on and sends a high pulse. If it was on, 
- * it turns off and sends a low pulse.
-*/
-/**
- * Conjunction modules (prefix &) remember the type of the most recent pulse received 
- * from each of their connected input modules; they initially default to remembering a low pulse for each input. 
- * When a pulse is received, the conjunction module first updates its memory for that input. 
- * Then, if it remembers high pulses for all inputs, it sends a low pulse; otherwise, it sends a high pulse.
-*/
-/**
- * There is a single broadcast module (named broadcaster). When it receives a pulse, it sends the same pulse to all of its destination modules.
-*/
-//initial pulse low pulse
+    Module(string id, vector<string> connections, bool enabled) {
+        this->id = id;
+        this->connections = connections;
+        this->enabled = enabled;
+    }
 
-struct modules{
-    string name;
-    string type;
-    vector<string> dest;
-    vector<struct mds*> pulseReceived;
-    bool isActive;
-    int sendPulse; //0 => low and 1 => high
-};
-struct mds{
-    string name;
-    int receivedPulse;
+    virtual bool updateState(bool input, string inputId) = 0;
 };
 
-vector<struct modules *> md;
-void addToDb(string block){
-    vector<string> vLines;
-    stringstream ss(block);
-    string temp;
-    while(getline(ss, temp, ' ')){
-        vLines.push_back(temp);
+class BroadCaster : public Module {
+public:
+    BroadCaster(vector<string> connections) : Module("broadcaster", connections, true) {}
+
+    bool updateState(bool input, string inputId) override {
+        return input;
     }
-    struct modules * newMd = new(modules);
-    if(vLines[0][0] == '&' ||  vLines[0][0] == '%'){
-        newMd->type = vLines[0][0];
-        newMd->name = vLines[0].substr(1);
-        if(vLines[0][0] == '&'){
-            newMd->isActive = false;
-        } else {
-            newMd->isActive = true;
+};
+
+class FlipFlop : public Module {
+public:
+    FlipFlop(string id, vector<string> connections) : Module(id, connections, false) {}
+
+    bool updateState(bool input, string inputId) override {
+        if (input) {
+            return NULL;
         }
-    } else {
-        newMd->type = "";
-        newMd->name = vLines[0];
+        this->enabled = !this->enabled;
+        return this->enabled;
     }
-    for(int i = 2; i < vLines.size(); i++){
-        string temp = vLines[i].substr(0, 3);
-        if(temp.back() == ','){temp.pop_back();}
-        newMd->dest.push_back(temp);
+};
+struct ComparePredicate {
+    bool operator()(const pair<string, bool>& p) const {
+        return p.second == true;
     }
-    md.push_back(newMd);
+};
+class Conjunction : public Module {
+public:
+    Conjunction(string id, vector<string> connections) : Module(id, connections, true) {}
+    bool compareV(const pair<string, bool> p){
+        return p.second == true;
+    }
+    bool updateState(bool input, string inputId) override {
+        this->inputs[inputId] = input;
+        return !(all_of(this->inputs.begin(), this->inputs.end(), ComparePredicate()));
+    }
+};
+
+pair<int, int> solve(unordered_map<string, Module*>& modules) {
+    int high = 0;
+    int low = 0;
+    int part1 = 0;
+    unordered_map<string, int> moduleRx;
+    for (int i = 0; i < 5000; i++) {
+        if (i == 1000) {part1 = high * low;}
+        low += 1;
+        Module* currentModule = modules["broadcaster"];
+        bool signal = currentModule->updateState(0, "");
+        deque<pair<Module*, bool> > q;
+        q.push_back(make_pair(currentModule, signal));
+        while (!q.empty()) {
+            currentModule = q.front().first;
+            signal = q.front().second;
+            q.pop_front();
+            for (const auto& con : currentModule->connections) {
+                if (signal) {
+                    high += 1;
+                }
+                else {
+                    low += 1;
+                }
+                if (modules.find(con) != modules.end()) {
+                    if (signal && modules[con]->id == "zp") {
+                        if (moduleRx.find(currentModule->id) == moduleRx.end()) {
+                            moduleRx[currentModule->id] = i + 1;
+                        }
+                        auto set1 = set<pair<string, int> >(moduleRx.begin(), moduleRx.end());
+                        auto set2 = set<pair<string, int> >(modules[con]->inputs.begin(), modules[con]->inputs.end());
+
+                        if (set1 == set2) {
+                            return make_pair(part1, lcm(moduleRx.begin()->second, prev(moduleRx.end())->second));
+                            //return make_pair(part1, lcm(moduleRx.begin()->second, moduleRx.rbegin()->second));
+                        }
+                    }
+                    bool newSignal = modules[con]->updateState(signal, currentModule->id);
+                    if (newSignal != NULL) {
+                        q.push_back(make_pair(modules[con], newSignal));
+                    }
+                }
+            }
+        }
+    }
+    return make_pair(high * low, 1);
 }
 
-int readFiles(istream & input, const char * argv){
-    int rules = 0;
-    string block;
-    while(getline(input, block)){
-        addToDb(block);
-    }
+void parseInput(string inputFile, unordered_map<string, Module*>& modules, void (*callback)(unordered_map<string, Module*>&, string, string, vector<string>&)) {
+    ifstream file("input.txt");
+    string line;
 
-    return 1;
+    while (getline(file, line)) {
+        istringstream iss(line);
+        string module;
+        string connections;
+        size_t delimiterPos = line.find(" -> ");
+        if (delimiterPos != string::npos) {
+            module = line.substr(0, delimiterPos);
+            connections = line.substr(delimiterPos + 4);
+        }
+
+        vector<string> connectionsVec;
+        size_t start = 0;
+        size_t end = connections.find(", ");
+
+        while (end != string::npos) {
+            string connection = connections.substr(start, end - start);
+            connectionsVec.push_back(connection);
+            start = end + 2; // 2 è la lunghezza di ", "
+            end = connections.find(", ", start);
+        }
+
+        string lastConnection = connections.substr(start);
+        connectionsVec.push_back(lastConnection);
+
+        string id = module.substr(0, module.find_first_of("&%"));
+        callback(modules, module, id, connectionsVec);
+    }
+    file.close();
 }
 
-void changePulse(int j, int &typePulse){
-    //cout << typePulse << endl;
-    if(md[j]->type == "%"){
-        if(!typePulse){
-            if(md[j]->isActive){
-                md[j]->isActive = false;
-                md[j]->sendPulse = 0;
-            } else{
-                md[j]->isActive = true;
-                md[j]->sendPulse = 1;
-            }
-        }
-    } else{
-        struct mds* newMd = new(mds);
-        newMd->name = md[j]->name;
-        newMd->receivedPulse = typePulse;
-        bool found = false;
-        for(int i = 0; i < md[j]->pulseReceived.size(); i++){
-            if(md[j]->pulseReceived[i]->name == md[j]->name){
-                md[j]->pulseReceived[i]->receivedPulse = typePulse;
-                found = true;
-            }
-        }
-        if(!found){
-            md[j]->pulseReceived.push_back(newMd);
-        }
-        bool allPulseHigh = 0;
-        for(int i = 0; i < md[j]->pulseReceived.size(); i++){
-            if(!md[j]->pulseReceived[i]->receivedPulse){
-                md[j]->sendPulse = 1;
-                allPulseHigh = 1;
-            }
-        }
-        if(allPulseHigh){md[j]->sendPulse = 0;}
+void initModules(unordered_map<string, Module*>& modules, string module, string id, vector<string>& connections) {
+    if (module.find("%") != string::npos) {
+        modules[id] = new FlipFlop(id, connections);
+    }
+    else if (module.find("&") != string::npos) {
+        modules[id] = new Conjunction(id, connections);
+    }
+    else {
+        modules[id] = new BroadCaster(connections);
     }
 }
 
-void findModule(vector<string> &tempDest, int &typePulse){
-    for(int i = 0; i < tempDest.size(); i++){
-        for(int j = 0; j < md.size(); j++){
-            if(tempDest[i] == md[j]->name){
-                changePulse(j, typePulse);
-                break;
-            }
+void initInputs(unordered_map<string, Module*>& modules, string module, string id, vector<string>& connections) {
+    for (const auto& con : connections) {
+        if (modules.find(con) != modules.end()) {
+            modules[con]->inputs[id] = false;
         }
     }
 }
 
-void sendPulse(){
-    long long low = 0;
-    long long high = 0;
-    for(int i = 0; i < 1000; i++){
-        string start = "broadcaster";
-        int typePulse = 0;
-        for(int j = 0; j < md.size(); j++){
-            if(start == md[j]->name){
-                vector<string> tempDest = md[j]->dest;
-                findModule(tempDest, typePulse);
-            }
-        }
-    }
-    cout << high * low << endl;
+pair<int, int> day20() {
+    string inputFile = "2023/inputs/day20.txt";
+    unordered_map<string, Module*> modules;
+    parseInput(inputFile, modules, initModules);
+    parseInput(inputFile, modules, initInputs);
+    return solve(modules);
 }
 
-int main(int argc, char * argv[]) {
-    if (argc > 1){
-        for (int i = 1; i < argc; i++){
-            ifstream f(argv[i]);
-            if(!f || !readFiles(f, argv[i])){
-                return EXIT_FAILURE;
-            }
-        }
-    } else {
-        if(!readFiles(cin, "{stdin}"))
-            return EXIT_FAILURE;
-    } 
-    sendPulse();
-    for(int i = 0; i < md.size(); i++){
-        //cout << md[i]->type << md[i]->name;
-        for(int j = 0; j < md[i]->dest.size(); j++){
-            //cout << " " << md[i]->dest[j];
-        }
-        //cout << endl;
-    }
+int main() {
+    pair<int, int> result = day20();
+    cout << result.first << endl;
+    cout << result.second << endl;
     return 0;
 }
+
+

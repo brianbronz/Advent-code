@@ -1,119 +1,131 @@
 #include "../Allreference.h"
-
-vector<string> grid;
-
-struct initialPos{
-    int x;
-    int y;
-};
-
-struct initialPos * init = new(initialPos);
-//4035660185267009 is wrong
-
-int readFiles(istream & input, const char * argv){
-    string block;
-    while(getline(input, block)){
-        grid.push_back(block);
-    } 
-    for(int i = 0; i < grid.size(); i++){
-        for(int j = 0; j < grid[i].size(); j++){
-            if(grid[i][j] == 'S'){
-                init->x = i;
-                init->y = j;
-                grid[i][j] = '0';
-            }
-        }
-    }
-    return -1;
+int mod(int n, int m) {
+  return ((n % m) + m) % m;
 }
 
+int main() {
+  ifstream inputFile("input.txt");
+  if (!inputFile) {
+    throw runtime_error("Failed to open input file");
+  }
 
-bool check(int x, int y){
-    return (x >= 0 && x < grid.size() && y >= 0 && y < grid.size() && grid[x][y] != '#');
-}
+  vector<string> rawMap;
+  string line;
+  while (getline(inputFile, line)) {
+    rawMap.push_back(line);
+  }
 
-void addToPS(vector<struct initialPos *> &ps, int x, int y){
-    bool notFound = false; 
-    for(int i = 0; i < ps.size(); i++){
-        if(x == ps[i]->x && y == ps[i]->y){
-            notFound = true;
-            break;
+  map<string, int> map1;
+  string start;
+  int width = rawMap[0].length();
+  int height = rawMap.size();
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+      char c = rawMap[y][x];
+      if (c == '.' || c == 'S') {
+        map1[to_string(x) + ", " + to_string(y)] = 0;
+        if (c == 'S') {
+          start = to_string(x) + ", " + to_string(y);
         }
+      }
     }
-    if(!notFound){
-        struct initialPos * newPs = new(initialPos);
-        newPs->x = x;
-        newPs->y = y;
-        ps.push_back(newPs);
-    }
-}
-int total = 0;
-void Steps(vector<struct initialPos *> &pos){
-    vector<struct initialPos *> ps;
-    int iSize = static_cast<int>(grid.size());
-    int jSize = static_cast<int>(grid.front().size());
+  }
 
-    for(int i = 0; i < pos.size(); i++){
-        int initX = pos[i]->x;
-        int initY = pos[i]->y;
-
-        if(check(((((initX + 1 ) % iSize) + iSize) % iSize), ((initY % jSize) + jSize) % jSize)){
-            addToPS(ps, ((((initX + 1 ) % iSize) + iSize) % iSize), ((initY % jSize) + jSize) % jSize);
-            grid[((((initX + 1 ) % iSize) + iSize) % iSize)][((initY % jSize) + jSize) % jSize] = '.';
-        } 
-        if(check(((((initX - 1 ) % iSize) + iSize) % iSize), ((initY % jSize) + jSize) % jSize)){
-            addToPS(ps, ((((initX - 1 ) % iSize) + iSize) % iSize), ((initY % jSize) + jSize) % jSize);
-            grid[((((initX - 1 ) % iSize) + iSize) % iSize)][((initY % jSize) + jSize) % jSize] = '.';
-        } 
-        if(check((((initX % iSize) + iSize) % iSize), (((initY + 1) % jSize) + jSize) % jSize)){
-            addToPS(ps, (((initX % iSize) + iSize) % iSize), (((initY + 1) % jSize) + jSize) % jSize);
-            grid[(((initX % iSize) + iSize) % iSize)][(((initY + 1) % jSize) + jSize) % jSize] = '.';
-        } 
-        if(check((((initX % iSize) + iSize) % iSize), (((initY - 1) % jSize) + jSize) % jSize)){
-            addToPS(ps, (((initX % iSize) + iSize) % iSize), (((initY - 1) % jSize) + jSize) % jSize);
-            grid[(((initX % iSize) + iSize) % iSize)][(((initY - 1) % jSize) + jSize) % jSize] = '.';
+  map<string, int> toVisit;
+  toVisit[start] = 0;
+  int needed = 26501365;
+  int afterNeeded = needed + 1;
+  int twoWidth = width * 2;
+  int modulo = afterNeeded % twoWidth;
+  int good = 0;
+  int onestep = 0;
+  int validationRounds = 2;
+  for (const auto& value : toVisit) {
+    string point = value.first;
+    int step = value.second;
+    if (onestep < step && step > (width * 2)) {
+      vector<int> uv;
+      for (const auto& entry : map1) {
+        if (entry.second != 0) {
+          uv.push_back(entry.second);
         }
-    }
-    pos = ps;
-    total = pos.size();
-}
-
-int main(int argc, char * argv[]){
-    if (argc > 1){
-        for (int i = 1; i < argc; i++){
-            ifstream f(argv[i]);
-            if(!f || !readFiles(f, argv[i])){
-                return EXIT_FAILURE;
-            }
+      }
+      sort(uv.begin(), uv.end());
+      map<int, int> groups;
+      for (const auto& entry : map1) {
+        if (entry.second != 0) {
+          if (groups.find(entry.second) == groups.end()) {
+            groups[entry.second] = 1;
+          } else {
+            groups[entry.second]++;
+          }
         }
-    } else {
-        if(!readFiles(cin, "{stdin}"))
-            return EXIT_FAILURE;
-    } 
-    vector<struct initialPos *> ps;
-    ps.push_back(init);
-    vector<int> params;
-    vector<int> lens;
-    lens.push_back(1);
-    for(int i = 0; i < 26501365; i++){
-        Steps(ps);
-        lens.push_back(ps.size());
-        if( i % grid.size() == 26501365 % grid.size()){
-            int len = 0;
-            for(int j = 0; j < lens.size() - 1; j++){
-                if(j % 2 == i %2){
-                    len += lens[j];
-                }
-            }
-            params.push_back(len);
+      }
+      if (uv.size() == 2) {
+        int seed = floor((2 * ((step) / twoWidth)));
+        int conjecture = (seed * seed) * groups[seed * seed] + (seed * seed - seed) * groups[seed * seed - seed];
+        if (conjecture != good) {
+          throw runtime_error("bad conjecture");
         }
-        if(params.size() == 3){break;}
+        if (seed > validationRounds && (step % twoWidth == modulo)) {
+          int neededSeed = (modulo == width) ? (floor((2 * (afterNeeded / twoWidth))) - 1) : floor((2 * (afterNeeded / twoWidth)));
+          vector<int> groupKeys;
+          for (const auto& entry : groups) {
+            groupKeys.push_back(entry.first);
+          }
+          cout << "SOLUTION" << endl;
+          cout << groups[groupKeys[0]] * (neededSeed * neededSeed) + groups[groupKeys[1]] * (neededSeed * neededSeed - neededSeed) << endl;
+          return 0;
+        }
+      } else if (uv.size() == 3) {
+        int seed = (step % twoWidth == width) ? (floor((2 * ((step) / twoWidth))) - 1) : floor((2 * ((step) / twoWidth)));
+        int conjecture = (seed * seed) * groups[seed * seed] + (seed * seed + seed) * groups[seed * seed + seed] + (seed * seed + seed + seed + 1) * groups[seed * seed + seed + seed + 1];
+        if (conjecture != good) {
+          throw runtime_error("bad conjecture");
+        }
+        if (seed > validationRounds && (step % twoWidth == modulo)) {
+          int neededSeed = (modulo == width) ? (floor((2 * (afterNeeded / twoWidth))) - 1) : floor((2 * (afterNeeded / twoWidth)));
+          vector<int> groupKeys;
+          for (const auto& entry : groups) {
+            groupKeys.push_back(entry.first);
+          }
+          cout << "SOLUTION" << endl;
+          cout << groups[groupKeys[0]] * (neededSeed * neededSeed) + groups[groupKeys[1]] * (neededSeed * neededSeed + neededSeed) + groups[groupKeys[2]] * (neededSeed * neededSeed + neededSeed + neededSeed + 1) << endl;
+          return 0;
+        }
+      } else {
+        throw runtime_error("cant solve");
+      }
+      onestep = step;
     }
-    long long p1 = params[0];
-    long long p2 = params[1] - params[0];
-    long long p3 = params[2] - params[1];
-    long long ip = 26501365 / static_cast<long long>(grid.size());
+    string::size_type pos = point.find(", ");
+    int curX = stoi(point.substr(0, pos));
+    int curY = stoi(point.substr(pos + 2));
+    if (step % 2 == 1) {
+      good++;
+      int realX = mod(curX, width);
+      int realY = mod(curY, height);
+      map1[to_string(realX) + ", " + to_string(realY)]++;
+    }
+    vector<pair<int, int> > direction;
+    direction.push_back(make_pair(1, 0));
+    direction.push_back(make_pair(-1, 0));
+    direction.push_back(make_pair(0, 1));
+    direction.push_back(make_pair(0, -1));
+    for (const auto& change : direction) {
+      int xChange = change.first;
+      int yChange = change.second;
+      int nextX = curX + xChange;
+      int nextY = curY + yChange;
+      string nextPoint = to_string(nextX) + ", " + to_string(nextY);
+      int realX = mod(nextX, width);
+      int realY = mod(nextY, height);
+      if (map1.find(to_string(realX) + ", " + to_string(realY)) != map1.end() && toVisit.find(nextPoint) == toVisit.end()) {
+        toVisit[nextPoint] = step + 1;
+      }
+    }
+  }
+  cout << good << endl;
 
-    cout << p1 + p2 * ip + (ip * (ip - 1) / 2) * (p3 - p2) << endl;
-    return 0;
+  return 0;
 }

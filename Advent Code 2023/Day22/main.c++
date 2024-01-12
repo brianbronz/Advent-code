@@ -1,147 +1,193 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
 #include "../Allreference.h"
-
-struct position{
-    int x1, x2;
-    int y1, y2;
-    int z1, z2;
-};
-
-vector<struct position *> ps;
-string replaceTilde(string block){
-    for(int i = 0; i < block.size(); i++){
-        if(block[i] == '~'){
-            block[i] = ' ';
+vector<vector<vector<int> > > splitInput(const string& input) {
+    vector<vector<vector<int> > > blocks;
+    vector<string> lines;
+    string line;
+    for (char c : input) {
+        if (c == '\n') {
+            lines.push_back(line);
+            line = "";
+        } else {
+            line += c;
         }
     }
-    return block;
-}
-
-string replaceComa(string block){
-    for(int i = 0; i < block.size(); i++){
-        if(block[i] == ','){
-            block[i] = ' ';
-        }
-    }
-    return block;
-}
-
-bool compareValue(struct position * &a, struct position * &b){
-   return a->z1 < b->z1;
-}
-
-int readFiles(istream & input, const char * argv){
-    string block;
-    while(getline(input, block)){
-        block = replaceTilde(block);
-        block = replaceComa(block);
-        cout << block << endl;
-        stringstream ss(block);
-        vector<string> coords;
-        string temp;
-        while(ss >> temp){
-            coords.push_back(temp);
-        }
-        struct position * newPs = new(position);
-        newPs->x1 = stoi(coords[0]);
-        newPs->y1 = stoi(coords[1]);
-        newPs->z1 = stoi(coords[2]);
-        newPs->x2 = stoi(coords[3]);
-        newPs->y2 = stoi(coords[4]);
-        newPs->z2 = stoi(coords[5]);
-        ps.push_back(newPs);
-    } 
-    sort(ps.begin(), ps.end(), compareValue);
-    return -1;
-}
-
-void movement(){
-    for(int i = 0; i < ps.size(); i++){
-        int maxZ = 1;
-        for(int j = 0; j < i; j++){
-            int maxX1 = max(ps[i]->x1, ps[j]->x1);
-            int minX2 = min(ps[i]->x2, ps[j]->x2);
-            int maxY1 = max(ps[i]->y1, ps[j]->y1);
-            int minY2 = min(ps[i]->y2, ps[j]->y2);
-            if(maxX1 <= minX2 && maxY1 <= minY2){
-                maxZ = max(maxZ, ps[j]->z2 + 1);
+    for (const string& line : lines) {
+        vector<vector<int> > block;
+        vector<string> parts;
+        string part;
+        for (char c : line) {
+            if (c == '~') {
+                parts.push_back(part);
+                part = "";
+            } else if (c == ',') {
+                part += c;
+            } else {
+                part += c;
             }
         }
-        ps[i]->z2 -= ps[i]->z1 - maxZ;
-        ps[i]->z1 = maxZ;
-    }
-    sort(ps.begin(), ps.end(), compareValue);
-}
-void part1(){
-    int res = 0;
-    vector<set<int> > supports;
-    vector<int> supported;
-    for(int i = 0; i < ps.size(); i++){
-        supports.push_back(set<int>());
-        supported.push_back(0);
-    }
-
-    for(int i = 0; i < ps.size(); i++){
-        for(int j = 0; j < i; j++){
-            int maxX1 = max(ps[i]->x1, ps[j]->x1);
-            int minX2 = min(ps[i]->x2, ps[j]->x2);
-            int maxY1 = max(ps[i]->y1, ps[j]->y1);
-            int minY2 = min(ps[i]->y2, ps[j]->y2);
-            if(maxX1 <= minX2 && maxY1 <= minY2 && ps[i]->z1 == ps[j]->z2 + 1){
-                supports[j].insert(i);
-                supported[i]++;
+        parts.push_back(part);
+        for (const string& part : parts) {
+            vector<int> coordinates;
+            string coordinate;
+            for (char c : part) {
+                if (c == ',') {
+                    coordinates.push_back(stoi(coordinate));
+                    coordinate = "";
+                } else {
+                    coordinate += c;
+                }
             }
+            coordinates.push_back(stoi(coordinate));
+            block.push_back(coordinates);
         }
+        blocks.push_back(block);
     }
-
-    for (int i = 0; i < ps.size(); i++){
-        int ok = 1;
-        for (auto x : supports[i]){
-            if (supported[x] < 2){
-                ok = 0;
-                break;
-            }
-        }
-        res += ok;
-    }
-
-    cout << res << endl;
+    return blocks;
 }
 
-void part2(){
-    int sol = 0;
-    vector<set<int> > supports;
-    vector<int> supported;
-    for(int i = 0; i < ps.size(); i++){
-        supports.push_back(set<int>());
-        supported.push_back(0);
+string getState(const vector<vector<vector<int> > >& blocks) {
+    string state = "";
+    for (const vector<vector<int> >& block : blocks) {
+        state += to_string(block[1][2]) + ",";
     }
-    for (int i = 0; i < ps.size(); i++){
-        for (int j = 0; j < i; j++){
-            int maxX1 = max(ps[i]->x1, ps[j]->x1);
-            int minX2 = min(ps[i]->x2, ps[j]->x2);
-            int maxY1 = max(ps[i]->y1, ps[j]->y1);
-            int minY2 = min(ps[i]->y2, ps[j]->y2);
-            if(maxX1 <= minX2 && maxY1 <= minY2){
-                supports[j].insert(i);
-                supported[i]++;
+    state.pop_back();
+    return state;
+}
+
+void fall(vector<vector<vector<int> > >& blocks) {
+    for (int i = 0; i < blocks.size(); i++) {
+        vector<vector<int> >& b = blocks[i];
+        if (b[0][2] <= 1) continue;
+        int z = b[0][2] - 1;
+        bool canFall = true;
+        for (int x = b[0][0]; x <= b[1][0]; x++) {
+            for (int y = b[0][1]; y <= b[1][1]; y++) {
+                for (int j = 0; j < blocks.size(); j++) {
+                    if (i != j) {
+                        const vector<vector<int> >& o = blocks[j];
+                        if (o[0][0] <= x && o[1][0] >= x && o[0][1] <= y && o[1][1] >= y && o[0][2] <= z && o[1][2] >= z) {
+                            canFall = false;
+                            break;
+                        }
+                    }
+                }
+                if (!canFall) break;
+            }
+            if (!canFall) break;
+        }
+        if (canFall) {
+            b[1][2]--;
+            b[0][2]--;
+        }
+    }
+}
+
+void computeSupports(vector<vector<vector<int> > >& blocks) {
+    for (int i = 0; i < blocks.size(); i++) {
+        vector<vector<int> >& b = blocks[i];
+        if (b[0][2] <= 1) continue;
+        vector<int> supports;
+        int z = b[0][2];
+        bool found = false;
+        while (z > 1 && !found) {
+            z--;
+            for (int x = b[0][0]; x <= b[1][0]; x++) {
+                for (int y = b[0][1]; y <= b[1][1]; y++) {
+                    for (int sId = 0; sId < blocks.size(); sId++) {
+                        const vector<vector<int> >& o = blocks[sId];
+                        if (i != sId && o[0][0] <= x && o[1][0] >= x && o[0][1] <= y && o[1][1] >= y && o[0][2] <= z && o[1][2] >= z) {
+                            if (find(supports.begin(), supports.end(), sId) == supports.end()) {
+                                supports.push_back(sId);
+                            }
+                            found = true;
+                        }
+                    }
+                }
+            }
+        }
+        b[2] = supports;
+        for (int supId : supports) {
+            if (find(blocks[supId][3].begin(), blocks[supId][3].end(), i) == blocks[supId][3].end()) {
+                blocks[supId][3].push_back(i);
             }
         }
     }
-
 }
-int main(int argc, char * argv[]){
-    if (argc > 1){
-        for (int i = 1; i < argc; i++){
-            ifstream f(argv[i]);
-            if(!f || !readFiles(f, argv[i])){
-                return EXIT_FAILURE;
+
+string fallFull(vector<vector<vector<int> > >& blocks) {
+    string state = "";
+    string currentState = getState(blocks);
+    while (state != currentState) {
+        state = currentState;
+        fall(blocks);
+        currentState = getState(blocks);
+    }
+    return state;
+}
+bool areAllBlocksValid(const vector<int>& blocks, const vector<int>& brokenSupports) {
+    for (int k : blocks) {
+        if (find(brokenSupports.begin(), brokenSupports.end(), k) == brokenSupports.end()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void sumSupporteds(vector<vector<vector<int> > >& blocks, int i, vector<int>& brokenSupports) {
+    for (int j : blocks[i][3]) {
+        if (areAllBlocksValid(blocks[j][2], brokenSupports)) {
+            brokenSupports.push_back(j);
+            sumSupporteds(blocks, j, brokenSupports);
+        }
+    }
+}
+int countValidElements(const vector<vector<vector<int> > >& blocks) {
+    int count = 0;
+
+    for (const auto& o : blocks) {
+        if (o[3].empty()) {
+            count++;
+        } else {
+            bool isValid = true;
+            for (int sId : o[3]) {
+                if (blocks[sId][2].size() != 1) {
+                    isValid = false;
+                    break;
+                }
+            }
+            if (isValid) {
+                count++;
             }
         }
-    } else {
-        if(!readFiles(cin, "{stdin}"))
-            return EXIT_FAILURE;
-    } 
-    //968 troppo alto
-    part1();
+    }
+
+    return count;
+}
+int accumulateBlocks(vector<vector<vector<int> > >& blocks) {
+    int result = 0;
+    for (const auto& o : blocks) {
+        vector<int> brokenSupports;
+        brokenSupports.push_back(&o - &blocks[0]);
+        sumSupporteds(blocks, &o - &blocks[0], brokenSupports);
+        result += brokenSupports.size() - 1;
+
+    }
+    return result;
+}
+int main() {
+    string input;
+    getline(cin, input);
+    vector<vector<vector<int> > > blocks = splitInput(input);
+    fallFull(blocks);
+    computeSupports(blocks);
+    int p1 = countValidElements(blocks);
+    cout << "p1 " << p1 << endl;
+    int p2 = accumulateBlocks(blocks);
+    cout << "p2 " << p2 << endl;
     return 0;
 }
+
+
