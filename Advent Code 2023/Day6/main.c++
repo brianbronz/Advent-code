@@ -1,5 +1,7 @@
 #include "../Allreference.h"
 
+vector<int> myData;
+vector<int> toBeat;
 void removeSpace(string block, vector<int>& add){
     string tempNum = "";
     int pos = block.find(":") + 1;
@@ -21,18 +23,15 @@ void removeSpace(string block, vector<int>& add){
 
 
 int readFiles(istream & input, const char * argv){
-     string block;
-     vector<int> myData;
-     vector<int> toBeat;
+    string block;
     while(getline(input, block)){
-        if (block.find("Time:") != string::npos){
-            removeSpace(block, myData);
-
-        } else {
+        (block.find("Time:") != string::npos)?
+            removeSpace(block, myData):
             removeSpace(block, toBeat);
-        }
     }
+}
 
+void countPossibility(){
     //pressed + 1 speed e - 1 time
     vector<int> possibility;
     for (int i = 0; i < myData.size(); i++){
@@ -48,6 +47,7 @@ int readFiles(istream & input, const char * argv){
         }
         possibility.push_back(count);
     }
+
     int total = 1;
     for (int i = 0; i < possibility.size(); i++){
         total = total * possibility[i];
@@ -68,5 +68,7 @@ int main(int argc, char * argv[]){
         if(!readFiles(cin, "{stdin}"))
             return EXIT_FAILURE;
     }
+
+    countPossibility();
     return 0;
 }

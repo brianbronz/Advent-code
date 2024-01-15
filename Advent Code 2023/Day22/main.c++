@@ -1,7 +1,5 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
 #include "../Allreference.h"
+
 vector<vector<vector<int> > > splitInput(const string& input) {
     vector<vector<vector<int> > > blocks;
     vector<string> lines;
@@ -166,6 +164,7 @@ int countValidElements(const vector<vector<vector<int> > >& blocks) {
 
     return count;
 }
+
 int accumulateBlocks(vector<vector<vector<int> > >& blocks) {
     int result = 0;
     for (const auto& o : blocks) {
@@ -177,6 +176,7 @@ int accumulateBlocks(vector<vector<vector<int> > >& blocks) {
     }
     return result;
 }
+
 int main() {
     string input;
     getline(cin, input);
@@ -189,5 +189,3 @@ int main() {
     cout << "p2 " << p2 << endl;
     return 0;
 }
-
-

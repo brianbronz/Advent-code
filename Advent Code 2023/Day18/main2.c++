@@ -1,7 +1,5 @@
 #include "../Allreference.h"
 
-//direzione
-//grid
 vector<pair<int, int> > grid;
 
 long long areaValue(vector<pair<int, int> > grid){
@@ -52,7 +50,6 @@ int readFiles(istream & input, const char * argv){
 	cout << interior + boundCount << endl;
 	return interior + boundCount;
 }
-
 
 int main(int argc, char * argv[]) {
     if (argc > 1){

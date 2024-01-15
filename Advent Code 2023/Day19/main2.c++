@@ -129,11 +129,9 @@ void definedInterval(){
             temp.push_back(word);
         }
         for(int j = 0; j <temp.size(); j++){
-            cout << temp[j] << " ";
             for (const auto& pair : Map) {
                 if(temp[j] == pair.first){
                     string next = temp[j + 1];
-                    //cout << next << " " << temp[j] << endl;
                     int index = 0;
                     for(int k = 0; k < pair.second.size(); k++){
                         for(int l = 0; l < pair.second[k]->cond.size(); l++){

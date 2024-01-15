@@ -1,6 +1,5 @@
 #include "../Allreference.h"
 
-
 struct Tile{
     string value;
     string type;
@@ -13,9 +12,8 @@ struct NumId{
     int id;
 };
 
-vector < vector<struct Tile *> > vT;
-vector <struct NumId *> numValue;
-
+vector<vector<struct Tile *> > vT;
+vector<struct NumId *> numValue;
 
 struct Tile * addToTile(char value, string type, int id){
     struct Tile * newTile = new(Tile);
@@ -64,7 +62,7 @@ int readFiles(istream & input, const char * argv){
                 tempTile = addToTile(block[i], "Rest", -1);
                 tempNum = addToVect(tempNum, -1);
             }
-            vectTile.push_back(tempTile);//una riga con tutte le colonne
+            vectTile.push_back(tempTile);//a row with columns
         };
         vT.push_back(vectTile);
         vectTile.clear();
@@ -129,13 +127,13 @@ string TakeLeftDigit(int i, int j){
             value += vT[i][p]->value;
             vT[i][p]->isInsert = true;
         } else if(vT[i][p]->type == "Rest" || vT[i][p]->type == "Point" || vT[i][p]->type == "Star"){
-            //tempLeft += vT[i][p]->value;
             break;
         }
     }
     reverse(value.begin(), value.end());
     return value;
 }
+
 string TakeRightDigit(int i, int j){
     string value = "";
     for (int p = j; p < vT[i].size(); p++){
@@ -148,6 +146,7 @@ string TakeRightDigit(int i, int j){
     }
     return value;
 }
+
 void checkMatrix(){
     vector<struct NumId *> sums;
     int counter = 0;
@@ -169,10 +168,8 @@ void checkMatrix(){
                 string finalRes = tempLeft + tempRight;
                 //isTake => boolean, row of star and column of star
                 if (!finalRes.empty()){
-                    cout << finalRes << " ";
                     struct NumId * newElement = new(NumId);
                     newElement->id = vT[isTake[1]][isTake[2]]->id;
-                    cout << newElement->id << endl;
                     newElement->value = finalRes;
                     sums.push_back(newElement);
                 }
@@ -180,6 +177,7 @@ void checkMatrix(){
         isTake.clear();   
         }
     }
+    
     int sumValue = 0;
     for (int i = 0; i < sums.size() - 1; i++){
         for (int j = i + 1; j < sums.size(); j++){

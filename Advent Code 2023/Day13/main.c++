@@ -47,12 +47,12 @@ vector<string> rotate(vector<string> & lines){
     }
     return res;
 }
+
 int reflection(vector<string> &lines){
     int res = 0;
     res = getScore(lines) * 100;
     vector<string> stringRotated = rotate(lines);
     res += getScore(stringRotated);
-    //rotate
     return res;
 }
 
@@ -60,7 +60,7 @@ int readFiles(istream & input, const char * argv){
     string block;
     //get all lines
     vector<string> lines;
-    int sums =0;
+    int sums = 0;
     while(getline(input, block)){
         if(block.size() == 0){
             sums += reflection(lines);
@@ -75,7 +75,6 @@ int readFiles(istream & input, const char * argv){
 }
 
 int main(int argc, char * argv[]){
-     //cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

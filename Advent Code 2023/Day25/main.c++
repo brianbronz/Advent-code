@@ -3,6 +3,7 @@
 map<string, int> names;
 vector<pair<int, int> > pairs;
 vector<vector<int> > edges;
+
 bool check(string name){
     for(map<string, int>::iterator it = names.begin(); it != names.end(); ++it){
         if(it->first == name){return true;}
@@ -52,6 +53,7 @@ int maxElementIndex(vector<int> w){
     }
     return index1;
 }
+
 pair<int, vector<int> > minCut(){
     vector<int> init;
     pair<int, vector<int> > best = make_pair(INT_MAX, init);

@@ -1,8 +1,8 @@
 #include "../Allreference.h"
 
 vector<vector<int> > input2;
-int rows, columns;
 map<string, pair<int, map<string, int> > > graph;
+int rows, columns;
 int result = INT_MAX;
 
 int readFiles(istream & input, const char * argv){

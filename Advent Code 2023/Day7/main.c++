@@ -1,12 +1,20 @@
 #include "../Allreference.h"
 #include "cardClass.c++"
-#include <algorithm>
-enum class Type{HighCard, OnePair, TwoPairs, ThreeOfAKind, FullHouse, Poker, FiveOfaKind,};
+
+enum Type{
+    HighCardT, 
+    OnePairT, 
+    TwoPairsT, 
+    ThreeOfAKindT, 
+    FullHouseT, 
+    PokerT, 
+    FiveOfaKindT,
+};
 
 struct Hand{
     string value;
     int bid;
-    Type type = Type::HighCard;
+    Type type = HighCardT;
 };
 
 vector<struct Hand *> listHand;
@@ -15,8 +23,8 @@ vector<char> strengths;
 Type GetHandType(string hand){
     // Count the number of each card
     unordered_map<char, int> cardCounts;
-    for (char card : hand){
-        cardCounts[card]++;
+    for (int i = 0; i < hand.size(); ++i) {
+        cardCounts[hand[i]]++;
     }
 
     // Then count the number of each count (ex. countCounts[2] == 2 means 2 pairs)
@@ -27,20 +35,19 @@ Type GetHandType(string hand){
 
     // Determine type based on counts of counts
     if (countCounts[5] == 1){
-        return Type::FiveOfaKind;
-    }
-    else if (countCounts[4] == 1){
-        return Type::Poker;
+        return FiveOfaKindT;
+    } else if (countCounts[4] == 1){
+        return PokerT;
     } else if (countCounts[3] == 1 && countCounts[2] == 1) {
-        return Type::FullHouse;
+        return FullHouseT;
     } else if (countCounts[3] == 1){
-        return Type::ThreeOfAKind;
+        return ThreeOfAKindT;
     } else if (countCounts[2] == 2){
-        return Type::TwoPairs;
+        return TwoPairsT;
     } else if (countCounts[2] == 1) {
-        return Type::OnePair;
+        return OnePairT;
     } else {
-        return Type::HighCard;
+        return HighCardT;
     }
 }
 
@@ -71,15 +78,15 @@ int check(char value, vector<char> power){
 
 string orderTheHand(struct Hand * hand){
     string res;
-    if(hand->type == Type::FullHouse){
+    if(hand->type == FullHouseT){
         res = FullHouse(hand->value);
-    } else if(hand->type == Type::HighCard){
+    } else if(hand->type == HighCardT){
         res = HighCard(hand->value);
-    } else if(hand->type == Type::OnePair){
+    } else if(hand->type == OnePairT){
         res = Pair(hand->value);
-    } else if(hand->type == Type::Poker){
+    } else if(hand->type == PokerT){
         res = Poker(hand->value);
-    } else if(hand->type == Type::ThreeOfAKind){
+    } else if(hand->type == ThreeOfAKindT){
         res = ThreeOfAKind(hand->value);
     } else {
         res = DoublePair(hand->value);
@@ -110,7 +117,6 @@ void part1(){
         for (int j = i + 1; j < listHand.size(); j++){
             if(listHand[i]->type == listHand[j]->type){
                 //method for the swap
-                cout << listHand[i]->value << " "<< listHand[j]->value << endl;
                 int currentK = 0;
                 int currentL = 0;
                 string first = "";

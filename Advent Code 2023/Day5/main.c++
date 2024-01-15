@@ -22,7 +22,6 @@ void addToNeedsVect(string block){
      //take number of winning
     string NumSeeds = block.substr(posDoublePoint);
     string tempNum = "";
-    cout << NumSeeds.size() << endl;
     for (long long i = 0; i < NumSeeds.size(); i++){
         if (isspace(NumSeeds[i])){
             if (tempNum != ""){
@@ -32,7 +31,6 @@ void addToNeedsVect(string block){
         } else {
             tempNum += NumSeeds[i];
         }
-        cout << i << endl;
     }
     if (tempNum != ""){
         needSeeds.push_back(stof(tempNum));
@@ -149,7 +147,6 @@ long long readFiles(istream & input, const char * argv){
      vector<string> tempSeeds;
 
     while(getline(input, block)){
-        //cout << block << endl;
         if (block.find("seeds:") != string::npos){
             addToNeedsVect(block);
         } else if(block.size() != 0){
@@ -255,12 +252,9 @@ void getLocation(){
             Lowest = temp;
         }
     }
-    //836040384
-    //220787924 10834440
     cout << Lowest << endl;
 }
 int main(int argc, char * argv[]){
-    cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

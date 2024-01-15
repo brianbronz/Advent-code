@@ -1,14 +1,14 @@
 #include "../Allreference.h"
 
-
 struct position{
     int x;
     int y;
 };
 
 vector<struct position*> ps;
-vector< vector<string> > grid;
-vector< vector<string> > temp;
+vector<vector<string> > grid;
+vector<vector<string> > temp;
+
 int readFiles(istream & input, const char * argv){
     string block;
     //get all lines
@@ -27,7 +27,7 @@ int readFiles(istream & input, const char * argv){
             temp.push_back(row);
         }
     }
-    cout << temp.size() << " " << temp[0].size() << endl;
+
     grid.resize(temp.size());
     for (int i = 0; i < temp[0].size(); i++){
         bool isEmptyC = true;
@@ -48,8 +48,7 @@ int readFiles(istream & input, const char * argv){
 
 void findPair(){
     //grid and temp
-    //ps vectpr
-    cout << grid.size() << endl;
+    //ps vector
     for(int i = 0; i < grid.size(); i++){
         for (int j = 0; j < grid[0].size(); j++){
             if(grid[i][j] == "#"){
@@ -75,7 +74,6 @@ void findPair(){
 }
 
 int main(int argc, char * argv[]){
-     //cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

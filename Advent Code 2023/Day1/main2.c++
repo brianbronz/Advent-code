@@ -67,18 +67,15 @@ int readFiles(istream & input, const char * argv){
                 }
             }
         }
-        if (secondD == " "){
-            num = stoi(firstD + firstD);
-        } else {
+        (secondD == " ")?
+            num = stoi(firstD + firstD):
             num = stoi(firstD + secondD);
-        }
         Numbers.push_back(num);
     }
     return 1;
 }
 
 int main(int argc, char * argv[]){
-    cout << argv[1] << endl;
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);
@@ -94,7 +91,6 @@ int main(int argc, char * argv[]){
     int sum = 0;
     for (int i = 0; i < Numbers.size(); i++){
         sum += Numbers[i];
-        cout << Numbers[i] << endl;
     }
     cout << sum << endl;
     return 1;

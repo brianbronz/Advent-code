@@ -1,14 +1,13 @@
 #include "../Allreference.h"
 
-
 struct Tile{
     string value;
     string type;
     int isInsert;
 };
 
-vector < vector<struct Tile *> > vT;
-vector <string> numValue;
+vector<vector<struct Tile *> > vT;
+vector<string> numValue;
 
 struct Tile * addToTile(char value, string type){
     struct Tile * newTile = new(Tile);
@@ -47,7 +46,7 @@ int readFiles(istream & input, const char * argv){
                 tempTile = addToTile(block[i], "Rest");
                 tempNum = addToVect(tempNum);
             }
-            vectTile.push_back(tempTile);//una riga con tutte le colonne
+            vectTile.push_back(tempTile);//a row with the column
         };
         vT.push_back(vectTile);
         vectTile.clear();
@@ -106,13 +105,13 @@ string TakeLeftDigit(int i, int j){
             value += vT[i][p]->value;
             vT[i][p]->isInsert = true;
         } else if(vT[i][p]->type == "Rest" || vT[i][p]->type == "Point"){
-            //tempLeft += vT[i][p]->value;
             break;
         }
     }
     reverse(value.begin(), value.end());
     return value;
 }
+
 string TakeRightDigit(int i, int j){
     string value = "";
     for (int p = j; p < vT[i].size(); p++){
@@ -125,6 +124,7 @@ string TakeRightDigit(int i, int j){
     }
     return value;
 }
+
 void checkMatrix(){
     vector<int> sums;
     int counter = 0;
@@ -150,14 +150,12 @@ void checkMatrix(){
     }
     int sumValue = 0;
     for (int i = 0; i < sums.size(); i++){
-        cout << sums[i] << endl;
         sumValue += sums[i];
     }
     cout << sumValue << endl;
 }
 
 int main(int argc, char * argv[]){
-    cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

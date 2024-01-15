@@ -16,14 +16,16 @@
 struct position{
     int x;
     int y;
-    string direction;//NS
+    string direction;
     char symbol;
 };
+
 int direction = 0;
 int initPositionX = 0;
 int initPositionY = 0;
 vector<string> lines;
 vector<struct position *> ps;
+
 int readFiles(istream & input, const char * argv){
     string block;
     //get all lines
@@ -34,8 +36,8 @@ int readFiles(istream & input, const char * argv){
     for (int i = 0; i < lines.size(); i++){
         for (int j = 0; j < lines[i].size(); j++){
             if (lines[i][j] == 'S'){
-                initPositionX = i;//what is the initial row
-                initPositionY = j;//what is the initial column
+                initPositionX = i;
+                initPositionY = j;
             }
         }
     }
@@ -48,6 +50,7 @@ void addNewposition(int x, int y, vector<struct position*> &a){
     newPs->y = y;
     a.push_back(newPs);
 }
+
 int nextMoves(int direction, vector<struct position *> &a){
     //current position => initial is initPositionX and initPositionY
     int distance = 0;
@@ -159,13 +162,12 @@ int interiorPoints(int area, int boundary_points) {
 }
 
 int area(vector<struct position*> &points) {
-    int areaVal =0;
+    int areaVal = 0;
     vector<struct position* > current, next;
     current = points;
     next = points;
     int firstX = current[0]->x;
     int firstY = current[0]->y;
-    ofstream o("test1.txt");
     for (int i = 1; i < points.size() - 1; i+= 1) {
         int x1 = current[i - 1]->x;
         int y2 = next[i]->y;
@@ -173,7 +175,6 @@ int area(vector<struct position*> &points) {
         int y1 = current[i - 1]->y;
         int currEval = (x1 * y2) - (x2 * y1);
         areaVal += currEval;
-        o << x1 << " " << y2 << " " << x2 << " " << y1 << endl;
     }
 
     int x2 = current[points.size() - 1]->x;
@@ -200,9 +201,9 @@ void path(){
     vector<struct position*> temp1;
     vector<struct position*> temp2;
     vector<struct position*> final1;
-    if(southDirection > westDirection){temp1 = psS;} else {temp1 = psW;}
-    if(northDirection > EastDirection){temp2 = psN;} else {temp2 = psE;}
-    if(temp1.size() > temp2.size()){final1 = temp1;} else{final1 = temp2;}
+    (southDirection > westDirection)? temp1 = psS : temp1 = psW;
+    (northDirection > EastDirection)? temp2 = psN : temp2 = psE;
+    (temp1.size() > temp2.size())? final1 = temp1 : final1 = temp2;
     //final1 tutti i punti
     //cout << res << endl;
     int shape_area = area(final1);
@@ -214,7 +215,6 @@ void path(){
 }
 
 int main(int argc, char * argv[]){
-     //cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

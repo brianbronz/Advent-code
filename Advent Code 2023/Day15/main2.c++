@@ -1,6 +1,5 @@
 #include "../Allreference.h"
 
-using namespace std;
 int hashAlgorithm(string str) {
     int result = 0;
     for (int i = 0; i < str.size(); i++) {
@@ -47,16 +46,17 @@ int readFiles(istream & input, const char * argv){
         }
 
     }
+
     int output = 0;
     for (int i = 0; i < boxes.size(); i++) {
        for (int j = 0; j < boxes[i].size(); j++) {
            output += (i+1) * (j+1) * boxes[i][j].second;
        }
-   }
-
+    }
     cout << output << endl;
     return 1;
 }
+
 int main(int argc, char * argv[]) {
     if (argc > 1){
         for (int i = 1; i < argc; i++){

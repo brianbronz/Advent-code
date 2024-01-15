@@ -10,26 +10,22 @@ int hashAlgorithm(string str) {
     return result;
 }
 
-
 int readFiles(istream & input, const char * argv){
     string block;
     //get all lines
     vector<string> splitted;
     while(getline(input, block, ',')){
-        cout << block << endl;
         splitted.push_back(block);
     };
-    cout << splitted.size() << endl;
+
     int total = 0;
-    ofstream f("output.txt");
     for (int i = 0; i < splitted.size(); i++) {
         total += hashAlgorithm(splitted[i]);
-        f << total << " " << splitted[i] << endl;;
     }
     cout << total << endl;
 }
+
 int main(int argc, char * argv[]) {
-    cout << hashAlgorithm("pdnq=8");
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

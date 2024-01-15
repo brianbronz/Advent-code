@@ -3,6 +3,7 @@
 struct database{
     vector<struct Step *> cv;
 };
+
 struct database * db = new(database);
 
 struct Step{
@@ -42,8 +43,8 @@ int readFiles(istream & input, const char * argv){
 }
 
 bool isEndWithZ(vector<string> vStr){
-    for (const string& str : vStr){
-        if(str[2] != 'Z'){
+    for (int i = 0; i < vStr.size(); i++){
+        if(vStr[i][2] != 'Z'){
             return false;
         }
     }
@@ -117,29 +118,21 @@ void totalStep(){
             initialStart.push_back(db->cv[i]->nameC);
         }
     }
+
     vector<int64_t> numStep;
     for(int i = 0; i < initialStart.size(); i++){
         int64_t value = countStep(initialStart[i]);
         numStep.push_back(value);
-        /**
-            20093
-            12169
-            13301
-            20659
-            16697
-         */
     }
+
     int64_t result = numStep[0];
     for (int i = 1; i < numStep.size(); i++){
         result = mcm(result, numStep[i]);
-        cout << result << endl;
     }
-    //509440307
     cout << result << endl;
 }
 
 int main(int argc, char * argv[]){
-    cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);
@@ -152,9 +145,6 @@ int main(int argc, char * argv[]){
             return EXIT_FAILURE;
     }
 
-    for(int i = 0; i < db->cv.size(); i++){
-        //cout << db->cv[i]->nameC << " " << db->cv[i]->left << " " << db->cv[i]->right << endl;
-    }
     totalStep();
     db->cv.clear();
     delete db;

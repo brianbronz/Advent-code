@@ -1,7 +1,5 @@
 #include "../Allreference.h"
 
-//direzione
-//grid
 vector<pair<int, int> > grid;
 
 long long areaValue(vector<pair<int, int> > grid){
@@ -18,6 +16,7 @@ long long areaValue(vector<pair<int, int> > grid){
 	}
 	return abs(res / 2);
 }
+
 int readFiles(istream & input, const char * argv){
 	vector<int> dir_x;
 	dir_x.push_back(1);

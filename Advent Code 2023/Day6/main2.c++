@@ -1,7 +1,5 @@
 #include "../Allreference.h"
-#include <cfloat>
 
-//Vedere un modo per migliorarlo
 void removeSpace(string block, vector<string>& add){
     string tempNum = "";
     int pos = block.find(":") + 1;
@@ -11,16 +9,11 @@ void removeSpace(string block, vector<string>& add){
                 add.push_back(tempNum);
                 tempNum = "";
         } else {
-            if (block[i] != ' '){
-                tempNum += block[i];
-            }
+            if (block[i] != ' '){tempNum += block[i];}
         }
     }
-    if (tempNum != ""){
-        add.push_back(tempNum);
-    }
+    if (tempNum != ""){add.push_back(tempNum);}
 }
-
 
 int readFiles(istream & input, const char * argv){
      string block;
@@ -45,17 +38,9 @@ int readFiles(istream & input, const char * argv){
     for (int i = 0; i < myData.size(); i++){
         maxTimeStr += myData[i];
     }
+
     float maxTime = stof(maxTimeStr);
     float minDistance = stof(minDistanceStr);
-    float counter = 0;
-    //maxTime => tempo a disposizione
-    //Posso premere il bottone dai 14 ai 71516 ms
-    float initVelocity = 0;
-    // 51 699 878
-    //377117112241505
-    //30 000 000 - 40 000 000
-    //34123437
-    //34 123 438
     int total = -1;
     for (int t = 1; t <= maxTime; ++t) {
         if (t * (maxTime - t) > minDistance) {
@@ -81,6 +66,3 @@ int main(int argc, char * argv[]){
     }
     return 0;
 }
-
-
-

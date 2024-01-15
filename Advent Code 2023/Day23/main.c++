@@ -4,10 +4,12 @@ struct position{
     int x;
     int y;
 };
-//2214
+
 struct position * init = new(position);
 struct position * enV = new(position);
 vector<string> grid;
+int maxStep = 0;
+
 int readFiles(istream & input, const char * argv){
     string block;
     while(getline(input, block)){
@@ -27,7 +29,7 @@ bool check(unordered_set<struct position *> visited, struct position * ps){
     }
     return false;
 }
-int maxStep = 0;
+
 void getLongestPath(struct position * start, int numSteps, 
     unordered_set<struct position *> visited,
     unordered_map<struct position *, int> &maxDistance){

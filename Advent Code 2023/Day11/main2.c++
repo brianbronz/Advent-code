@@ -1,14 +1,13 @@
 #include "../Allreference.h"
 
-
 struct position{
     double x;
     double y;
 };
 
 vector<struct position*> ps;
-vector< vector<string> > grid;
-vector< vector<string> > temp;
+vector<vector<string> > grid;
+vector<vector<string> > temp;
 int readFiles(istream & input, const char * argv){
     string block;
     //get all lines
@@ -50,7 +49,6 @@ int readFiles(istream & input, const char * argv){
 void findPair(){
     //grid and temp
     //ps vectpr
-    cout << grid.size() << endl;
     vector<double> previousRow (grid.size(), 0);
     vector<double> previousColumn (grid[0].size(), 0);
     for (int i = 1; i < grid.size(); i++){
@@ -60,11 +58,9 @@ void findPair(){
                 isExpanded = 0;
             }
         }
-        if(isExpanded){
-            previousRow[i] = previousRow[i - 1] + 1;
-        } else {
+        (isExpanded)?
+            previousRow[i] = previousRow[i - 1] + 1:
             previousRow[i] = previousRow[i - 1];
-        }
     }
 
     for (int j = 1; j < grid[0].size(); j++){
@@ -74,11 +70,9 @@ void findPair(){
                 isExpanded = false;
             }
         }
-        if(isExpanded){
-            previousColumn[j] = previousColumn[j - 1] + 1;
-        } else {
+        (isExpanded)?
+            previousColumn[j] = previousColumn[j - 1] + 1:
             previousColumn[j] = previousColumn[j - 1];
-        }
     }
 
     for(int i = 0; i < grid.size(); i++){
@@ -93,7 +87,7 @@ void findPair(){
     }
 
 
-    //totale
+    //total
     double total = 0;
     for (int i = 0; i < ps.size() - 1; i++){
         for (int j = i + 1; j < ps.size(); j++){
@@ -110,7 +104,6 @@ void findPair(){
 }
 
 int main(int argc, char * argv[]){
-     //cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

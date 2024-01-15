@@ -15,16 +15,13 @@ vector<string> removeSpace(string block){
 int combinations(int init, int groupPos, string text, vector<int> &position){
     if(groupPos >= position.size()){
         for (int i = init; i < text.size(); i++){
-            if(text[i] == '#'){
-                return 0;
-            }
+            if(text[i] == '#'){return 0;}
         }
         return 1;
     }
 
-    if(init >= text.size()){
-        return 0;
-    }
+    if(init >= text.size()){return 0;}
+
     int res = 0;
     if(text[init] == '.' || text[init] == '?'){
         res += combinations(init + 1, groupPos, text, position);
@@ -43,15 +40,13 @@ int combinations(int init, int groupPos, string text, vector<int> &position){
             if((init + position[groupPos] < text.size() && text[init + position[groupPos]] != '#') ||
                 init + position[groupPos] == text.size()){
                     res += combinations(init + position[groupPos] + 1, groupPos + 1, text, position);
-                }
+            }
         }
     }
     return res;
 }
 
 void defineValue(string part1, string part2){
-    //part1 = ?.???#????? 
-    //part2 = 1,3,1
     vector<int> position;
     int previous = 0;
     for (int i = 0; i < part2.size(); i++){
@@ -74,9 +69,7 @@ void defineValue(string part1, string part2){
             position.push_back(tempV[j]);
         }
     }
-    cout << part1 << endl;
     possibility += combinations(0, 0, part1, position);
-    cout << possibility << endl;
 }
 
 int readFiles(istream & input, const char * argv){
@@ -93,7 +86,6 @@ int readFiles(istream & input, const char * argv){
 }
 
 int main(int argc, char * argv[]){
-     //cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

@@ -1,6 +1,12 @@
 #include "../Allreference.h"
 
-enum Direction{North, South, East, West};
+enum Direction{
+    North, 
+    South, 
+    East, 
+    West
+};
+
 Direction initialDirection = East;
 int initX = 0;
 int initY = 0;
@@ -16,9 +22,8 @@ void visit(int x, int y, Direction dir, vector<string> splitted, vector<vector<i
     Direction currentDirection = dir;
     bool started = true;
     while (true){
-        if (check(currentX, currentY, splitted, y, x, currentDirection, dir, started)){
-            return;
-        }
+        if (check(currentX, currentY, splitted, y, x, currentDirection, dir, started)){return;}
+        
         bool visitedBefore = visited[currentY][currentX] == 1;
         visited[currentY][currentX] = 1;
         char terrain = splitted[currentY][currentX];
@@ -59,6 +64,7 @@ void visit(int x, int y, Direction dir, vector<string> splitted, vector<vector<i
         currentDirection = nextDirection;
     }
 }
+
 int nextMoves(int x, int y, Direction direction, vector<string> splitted){
     static vector< vector<int> > visitedNode(splitted.size(), vector<int>(splitted.size(), 0));
     for (auto it = visitedNode.begin(); it != visitedNode.end(); ++it) {
@@ -76,6 +82,7 @@ int nextMoves(int x, int y, Direction direction, vector<string> splitted){
     return totalSum;
 
 }
+
 void part1(vector<string> & splitted){
     cout << nextMoves(initX, initY, initialDirection, splitted) << endl;
 }
@@ -88,12 +95,14 @@ void part2(vector<string> splitted){
         results.push_back(nextMoves(0, i, East, splitted));
         results.push_back(nextMoves(splitted.size() - 1, i, West, splitted));
     }
+
     int maxResult = 0;
     for(int i = 0; i < results.size(); i++){
         if(results[i] > maxResult){maxResult = results[i];}
     }
     cout << maxResult << endl;;
 }
+
 int readFiles(istream & input, const char * argv){
     string block;
     //get all lines
@@ -106,6 +115,7 @@ int readFiles(istream & input, const char * argv){
     part2(splitted);
     return -1;
 }
+
 int main(int argc, char * argv[]) {
     if (argc > 1){
         for (int i = 1; i < argc; i++){
@@ -121,4 +131,3 @@ int main(int argc, char * argv[]) {
 
     return 0;
 }
-
