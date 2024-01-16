@@ -15,6 +15,7 @@ void addToMap(){
     cardValues.insert(make_pair("K", 13));
     cardValues.insert(make_pair("A", 14));
 }
+
 string HighCard(string cards){
     addToMap();
     vector<int> res;
@@ -110,7 +111,6 @@ string DoublePair(string cards){
 
 string ThreeOfAKind(string cards){
     addToMap();
-    cout << cards << endl;
     vector<int> res;
     int stopLoop = 0;
     for (int i = 0; i < cards.size() - 1; i++){
@@ -124,7 +124,6 @@ string ThreeOfAKind(string cards){
                 res.push_back(value);
                 res.push_back(value);
                 res.push_back(value);
-                cout << value << endl;
                 break;
             }
         }
@@ -147,7 +146,6 @@ string ThreeOfAKind(string cards){
     }
     string finalRes = "";
     for(int i = 0; i < res.size(); i++){
-        cout << res[i] << endl;
         finalRes += to_string(res[i]);
     }
     return finalRes;

@@ -203,7 +203,7 @@ void multiplyMatrixVector(long double mat[6][6], vector<long double> vec, long d
             result[i] += mat[i][j] * vec[j];
         }
     }
-    int64_t sum = int64_t(std::round(result[0]) + std::round(result[1]) + std::round(result[2]));
+    int64_t sum = int64_t(round(result[0]) + round(result[1]) + round(result[2]));
 
     cout << "Somma arrotondata: " << sum << endl;
 }

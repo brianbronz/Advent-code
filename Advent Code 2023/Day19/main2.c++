@@ -10,8 +10,10 @@ struct Condition{
     int secondValue;
     string destination;
 };
+
 unordered_map<string, vector<struct Rules *> > Map;
 unordered_map <string, vector<string> >ap;
+vector<string> allDestinationsToA;
 vector<struct Rules*> rls;
 long long total = 0;
 string init = "in";
@@ -30,6 +32,7 @@ void addRules(string block){
     while(getline(ss, temp, ',')){
         vLines.push_back(temp);
     }
+
     for (int i = 0; i < vLines.size() - 1; i++){
         string temp1 = vLines[i];
         //variable
@@ -60,11 +63,6 @@ void addRules(string block){
     newRules->cond.push_back(lastC);
     newRules->name = name;
     rls.push_back(newRules);
-    for(int i = 0; i < rls.size(); i++){
-        for(int j = 0; j<rls[i]->cond.size(); j++){
-            //cout << rls[i]->cond[j]->destination << endl;
-        }
-    }
     Map.insert(make_pair(name,rls));
     rls.clear();
 }
@@ -72,32 +70,31 @@ void addRules(string block){
 int readFiles(istream & input, const char * argv){
     string block;
     while(getline(input, block)){
-        cout << block << endl;
         if(block.empty()){
             break;
         }
         addRules(block);
     }
-
     return 1;
 }
 
-vector<string> allDestinationsToA;
 void findPath(const string& start, const string& goal, vector<string>& path, unordered_set<string>& visited) {
     path.push_back(start);
     visited.insert(start);
 
     if (start == goal) {
         string resPath = "";
-        for (const auto& node : path) {
-            resPath += node + " ";
+        for(int i = 0; i < path.size(); i++){
+            resPath += path[i] + " ";
         }
         resPath.pop_back();
         allDestinationsToA.push_back(resPath);
     } else {
         if (Map.find(start) != Map.end()) {
-            for (const auto& rule : Map[start]) {
-                for (const auto& condition : rule->cond) {
+            for (vector<Rules*>::const_iterator it = Map[start].begin(); it != Map[start].end(); ++it) {
+                const Rules* rule = *it;
+                for (vector<Condition*>::const_iterator condIt = rule->cond.begin(); condIt != rule->cond.end(); ++condIt) {
+                    const Condition* condition = *condIt;
                     string nextNode = condition->destination;
                     if (visited.find(nextNode) == visited.end()) {
                         findPath(nextNode, goal, path, visited);
@@ -106,7 +103,6 @@ void findPath(const string& start, const string& goal, vector<string>& path, uno
             }
         }
     }
-
     visited.erase(start);
     path.pop_back();
 }
@@ -129,22 +125,25 @@ void definedInterval(){
             temp.push_back(word);
         }
         for(int j = 0; j <temp.size(); j++){
-            for (const auto& pair : Map) {
-                if(temp[j] == pair.first){
+            for (unordered_map<string, vector<Rules*> >::const_iterator it = Map.begin(); it != Map.end(); ++it) {
+                const string& key = it->first;
+                if(temp[j] == key){
                     string next = temp[j + 1];
                     int index = 0;
-                    for(int k = 0; k < pair.second.size(); k++){
-                        for(int l = 0; l < pair.second[k]->cond.size(); l++){
-                            if(pair.second[k]->cond[l]->destination == next){
+                    const vector<Rules*>& rulesVector = it->second;
+                    for(int k = 0; k < rulesVector.size(); k++){
+                        const Rules* rule = rulesVector[k];
+                        for(int l = 0; l < rule->cond.size(); l++){
+                            if(rule->cond[l]->destination == next){
                                 index = l;
                                 break;
                             }
                         }
                         //casi rifiutati
                         for(int l = 0; l < index; l++){
-                            string op = pair.second[k]->cond[l]->operation;
-                            string v = pair.second[k]->cond[l]->variable;
-                            int value = pair.second[k]->cond[l]->secondValue;
+                            string op = rule->cond[l]->operation;
+                            string v = rule->cond[l]->variable;
+                            int value = rule->cond[l]->secondValue;
                             if(v == "a"){
                                 (op == "<")? minA = value: maxA = value;
                             } else if(v == "x"){
@@ -157,9 +156,9 @@ void definedInterval(){
                         }
 
                         //caso che deve accadere
-                        string op = pair.second[k]->cond[index]->operation;
-                        string v = pair.second[k]->cond[index]->variable;
-                        int value = pair.second[k]->cond[index]->secondValue;
+                        string op = rule->cond[index]->operation;
+                        string v = rule->cond[index]->variable;
+                        int value = rule->cond[index]->secondValue;
                         if(op == ""){break;}
                         if(v == "a"){
                             (op == ">")? minA = value: maxA = value;
@@ -175,26 +174,20 @@ void definedInterval(){
                 }
             }
         }
-        cout << endl;
-        cout << " Max X: " <<maxX << " Min X: " << minX;
-        cout << endl;
-        cout << " Max M: " << maxM << " Min M: " << minM << endl;
-        cout << " Max S: " << maxS << " Min S: " << minS << endl;
-        cout << " Max A: " << maxA << " Min A: " << minA << endl;
         total += (maxX - minX) * (maxM - minM) * (maxS - minS) * (maxA - minA);
     }
-    cout <<total;
 }
+
 //167409079868000
 void part2(){
     vector<string> path;
     unordered_set<string> visited;
     string start = "in";
     string goal = "A";
-
     findPath(start, goal, path, visited);
     definedInterval();
 }
+
 int main(int argc, char * argv[]) {
     if (argc > 1){
         for (int i = 1; i < argc; i++){
@@ -210,16 +203,17 @@ int main(int argc, char * argv[]) {
 
     vector<string> destinations;
     unordered_map<string, vector<string> > mapToUse;
-    for (const auto& pair : Map) {
-        cout << pair.first << endl;
-        for(int i = 0; i < pair.second.size(); i++){
-            for(int j = 0; j < pair.second[i]->cond.size(); j++){
-                cout << " " <<pair.second[i]->cond[j]->destination << endl;
-                destinations.push_back(pair.second[i]->cond[j]->destination);
+    for (unordered_map<string, vector<Rules*> >::const_iterator it = Map.begin(); it != Map.end(); ++it) {
+        const string& key = it->first;
+        const vector<Rules*>& rulesVector = it->second;
+        vector<string> destinations;
+        for (int i = 0; i < rulesVector.size(); ++i) {
+            const Rules* rule = rulesVector[i];
+            for (int j = 0; j < rule->cond.size(); ++j) {
+                destinations.push_back(rule->cond[j]->destination);
             }
         }
-        ap.insert(make_pair(pair.first, destinations));
-        cout << endl;
+        ap.insert(make_pair(key, destinations));
     }
 
     part2();

@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctype.h>
+#include <deque>
 #include <dirent.h>
 #include <fstream>
 #include <functional>

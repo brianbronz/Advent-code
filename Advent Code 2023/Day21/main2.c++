@@ -1,4 +1,5 @@
 #include "../Allreference.h"
+
 int mod(int n, int m) {
   return ((n % m) + m) % m;
 }
@@ -89,7 +90,6 @@ int main() {
           for (const auto& entry : groups) {
             groupKeys.push_back(entry.first);
           }
-          cout << "SOLUTION" << endl;
           cout << groups[groupKeys[0]] * (neededSeed * neededSeed) + groups[groupKeys[1]] * (neededSeed * neededSeed + neededSeed) + groups[groupKeys[2]] * (neededSeed * neededSeed + neededSeed + neededSeed + 1) << endl;
           return 0;
         }
@@ -126,6 +126,5 @@ int main() {
     }
   }
   cout << good << endl;
-
   return 0;
 }

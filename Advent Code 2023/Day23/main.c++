@@ -6,7 +6,6 @@ struct position{
 };
 
 struct position * init = new(position);
-struct position * enV = new(position);
 vector<string> grid;
 int maxStep = 0;
 
@@ -17,15 +16,13 @@ int readFiles(istream & input, const char * argv){
     } 
     init->x = 0;
     init->y = 1;
-    enV->x = grid.size() -1;
-    enV->y = grid.size() -2;
     return -1;
 }
 
-bool check(unordered_set<struct position *> visited, struct position * ps){
-    for(auto it = visited.begin(); it != visited.end(); ++it){
-        struct position * current = *it;
-        if(current->x == ps->x && current->y == ps->y){return true;}
+bool check(unordered_set<struct position *> visited, struct position * ps) {
+    for (unordered_set<struct position *>::iterator it = visited.begin(); it != visited.end(); ++it) {
+        struct position *current = *it;
+        if (current->x == ps->x && current->y == ps->y) {return true;}
     }
     return false;
 }
@@ -55,7 +52,8 @@ void getLongestPath(struct position * start, int numSteps,
         return;
     }
     maxDistance[start] = numSteps;
-    for (const auto &direction : directions) {
+    for (vector<struct position *>::iterator it = directions.begin(); it != directions.end(); ++it) {
+        const struct position *direction = *it;
         struct position * newPs = new(position);
         newPs->x = start->x + direction->x;
         newPs->y = start->y + direction->y;

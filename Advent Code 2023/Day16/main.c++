@@ -23,7 +23,7 @@ void visit(int x, int y, Direction dir, vector<string> splitted, vector<vector<i
     bool started = true;
     while (true){
         if (check(currentX, currentY, splitted, y, x, currentDirection, dir, started)){return;}
-        
+
         bool visitedBefore = visited[currentY][currentX] == 1;
         visited[currentY][currentX] = 1;
         char terrain = splitted[currentY][currentX];
@@ -67,14 +67,17 @@ void visit(int x, int y, Direction dir, vector<string> splitted, vector<vector<i
 
 int nextMoves(int x, int y, Direction direction, vector<string> splitted){
     static vector< vector<int> > visitedNode(splitted.size(), vector<int>(splitted.size(), 0));
-    for (auto it = visitedNode.begin(); it != visitedNode.end(); ++it) {
-        for (auto innerIt = it->begin(); innerIt != it->end(); ++innerIt) {
+    //matrice bidimensionale di nodi visitati (tutti uguali a zero)
+    for (vector< vector<int> >::iterator it = visitedNode.begin(); it != visitedNode.end(); ++it) {
+        for (vector<int>::iterator innerIt = it->begin(); innerIt != it->end(); ++innerIt) {
             *innerIt = 0;
         }
     }
+    //Si controlla quali nodi vengono visitati
     visit(x, y, direction, splitted, visitedNode);
     long totalSum = 0;
-    for (const auto &row : visitedNode) {
+    for (int rowIndex = 0; rowIndex < visitedNode.size(); rowIndex++) {
+        const vector<int>& row = visitedNode[rowIndex];
         for (int i = 0; i < row.size(); i++){
             totalSum += row[i];
         }

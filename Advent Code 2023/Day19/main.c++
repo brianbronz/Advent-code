@@ -133,11 +133,8 @@ void addParts(string block){
                 break;
         };
     }
-    //{x=787,m=2655,a=1222,s=2876}
     //Check if it is accepted the part
-    //part 1
     isValid(newParts);
-    //part 2
 }
 
 int readFiles(istream & input, const char * argv){

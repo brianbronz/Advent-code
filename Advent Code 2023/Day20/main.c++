@@ -1,11 +1,5 @@
-#include <iostream>
-#include <deque>
-#include <unordered_map>
-#include <cmath>
-#include <set>
-#include <numeric>
-
 #include "../Allreference.h"
+
 template<typename T>
 T lcm(T a, T b) {
     return lcm(a, b);
@@ -148,11 +142,9 @@ void parseInput(string inputFile, unordered_map<string, Module*>& modules, void 
 void initModules(unordered_map<string, Module*>& modules, string module, string id, vector<string>& connections) {
     if (module.find("%") != string::npos) {
         modules[id] = new FlipFlop(id, connections);
-    }
-    else if (module.find("&") != string::npos) {
+    } else if (module.find("&") != string::npos) {
         modules[id] = new Conjunction(id, connections);
-    }
-    else {
+    } else {
         modules[id] = new BroadCaster(connections);
     }
 }

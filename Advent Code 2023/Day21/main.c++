@@ -1,14 +1,13 @@
 #include "../Allreference.h"
 
-vector<string> grid;
-
 struct initialPos{
     int x;
     int y;
 };
 
 struct initialPos * init = new(initialPos);
-
+vector<string> grid;
+int total = 0;
 
 int readFiles(istream & input, const char * argv){
     string block;
@@ -26,7 +25,6 @@ int readFiles(istream & input, const char * argv){
     }
     return -1;
 }
-
 
 bool check(int x, int y){
     return (x >= 0 && x < grid.size() && y >= 0 && y < grid.size() && grid[x][y] != '#');
@@ -47,7 +45,7 @@ void addToPS(vector<struct initialPos *> &ps, int x, int y){
         ps.push_back(newPs);
     }
 }
-int total = 0;
+
 void Steps(vector<struct initialPos *> &pos){
     vector<struct initialPos *> ps;
     for(int i = 0; i < pos.size(); i++){
@@ -90,7 +88,6 @@ int main(int argc, char * argv[]){
     ps.push_back(init);
     for(int i = 0; i < 64; i++){
         Steps(ps);
-        cout << endl;
     }
     cout << ps.size()<< endl;
     return 0;

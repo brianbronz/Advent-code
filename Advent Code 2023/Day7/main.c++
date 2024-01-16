@@ -29,7 +29,9 @@ Type GetHandType(string hand){
 
     // Then count the number of each count (ex. countCounts[2] == 2 means 2 pairs)
     unordered_map<int, int> countCounts;
-    for (const auto& [card, count] : cardCounts){
+    for (unordered_map<char, int>::const_iterator it = cardCounts.begin(); it != cardCounts.end(); ++it) {
+        const char& card = it->first;
+        const int& count = it->second;
         countCounts[count]++;
     }
 
@@ -95,24 +97,11 @@ string orderTheHand(struct Hand * hand){
 }
 
 void part1(){
-    // Sort hands by increasing rank
-    strengths.push_back('2');
-    strengths.push_back('3');
-    strengths.push_back('4');
-    strengths.push_back('5');
-    strengths.push_back('6');
-    strengths.push_back('7');
-    strengths.push_back('8');
-    strengths.push_back('9');
-    strengths.push_back('T');
-    strengths.push_back('J');
-    strengths.push_back('Q');
-    strengths.push_back('K');
-    strengths.push_back('A');
     for(int i = 0; i < listHand.size(); i++){
         string temp = orderTheHand(listHand[i]);
         listHand[i]->value = temp;
     }
+    
     for (int i = 0; i < listHand.size() - 1; i++){
         for (int j = i + 1; j < listHand.size(); j++){
             if(listHand[i]->type == listHand[j]->type){
@@ -151,6 +140,7 @@ void part1(){
             }
         }
     }
+
     int64_t acc = 0;
     for (int i = 0; i < listHand.size(); ++i){
         acc += listHand[i]->bid * (i + 1);
