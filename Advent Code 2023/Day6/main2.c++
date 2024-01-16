@@ -20,12 +20,10 @@ int readFiles(istream & input, const char * argv){
      vector<string> myData;
      vector<string> toBeat;
     while(getline(input, block)){
-        if (block.find("Time:") != string::npos){
-            removeSpace(block, myData);
-
-        } else {
+        (block.find("Time:") != string::npos)?
+            removeSpace(block, myData):
             removeSpace(block, toBeat);
-        }
+        
     }
 
     //pressed + 1 speed e - 1 time
@@ -48,11 +46,9 @@ int readFiles(istream & input, const char * argv){
         }
     }
     cout << total << endl;
-
 }
 
 int main(int argc, char * argv[]){
-    cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);

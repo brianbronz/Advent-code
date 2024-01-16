@@ -103,7 +103,6 @@ void addToVect(string seed, vector<string> tempSeeds){
         newMap->size = stof(rs[2]);
         newMap->Target = stof(rs[1]);
         newMap->Source = stof(rs[0]);
-        //cout << newMap->Source << " "<< newMap->Target << " " << newMap->size << endl;
         if(seed == "seed-to-soil"){
             STSM.push_back(newMap);
         } else if(seed == "soil-to-fertilizer"){
@@ -159,21 +158,15 @@ long long readFiles(istream & input, const char * argv){
     }
 }
 
-bool InRange(long long Start, long long size, long long Num)
-	{
+bool InRange(long long Start, long long size, long long Num){
 	return (Num >= Start && Num <= (Start + size -1));
-	}
+}
 
 void getLocation(){
-    
-    //cout << minValue << endl;
     long long Lowest = INT_MAX;
-    long long lls = 0;
-    long long insanity = 0;
     for (long long i = 0; i < needSeeds.size(); i += 1){
         long long temp = 0;
         bool found = false;
-        cout << needSeeds[i] << endl;
         //To soil
         for(long long j = 0; j < STSM.size(); j++){
             if(needSeeds[i] >= STSM[j]->Source && needSeeds[i] < STSM[j]->Source + STSM[j]->size && !found){
@@ -181,11 +174,8 @@ void getLocation(){
                 found = true;
             }
         }
-        if (!found){
-            temp = needSeeds[i];
-        }
+        if (!found){temp = needSeeds[i];}
         found = false;
-        cout << temp << endl;
         long long temp2 = temp;
         //to fertilizer
         for(long long j = 0; j < STFM.size(); j++){
@@ -197,7 +187,6 @@ void getLocation(){
         if (found){temp = temp2;}
         found = false;
         //to water
-        cout << temp << endl;
         for(long long j = 0; j < FTWM.size(); j++){
             if(temp2 >= FTWM[j]->Source && temp2 < FTWM[j]->Source + FTWM[j]->size && !found){
                 temp2 = temp - FTWM[j]->Source + FTWM[j]->Target;
@@ -206,7 +195,6 @@ void getLocation(){
         }
         if (found){temp = temp2;}
         found = false;
-        cout << temp << endl;
         // to light
         for(long long j = 0; j < WTLM.size(); j++){
             if(temp2 >= WTLM[j]->Source && temp2 < WTLM[j]->Source + WTLM[j]->size && !found){
@@ -216,7 +204,6 @@ void getLocation(){
         }
         if (found){temp = temp2;}
         found = false;
-        cout << temp << endl;
         //to temperature
         for(long long j = 0; j < LTTM.size(); j++){
             if(temp2 >= LTTM[j]->Source && temp2 < LTTM[j]->Source + LTTM[j]->size && !found){
@@ -228,7 +215,6 @@ void getLocation(){
         if (found){temp = temp2;}
         found = false;
         //to humidity
-        cout << temp2 << endl;
         for(long long j = 0; j < TTTM.size(); j++){
             if(temp2 >= TTTM[j]->Source && temp2 < TTTM[j]->Source + TTTM[j]->size && !found){
                 temp2 = temp + TTTM[j]->Target - TTTM[j]->Source;
@@ -237,7 +223,6 @@ void getLocation(){
         }
         if (found){temp = temp2;}
         found = false;
-        cout << temp2 << endl;
         //to location
         for(long long j = 0; j < HTLM.size(); j++){
             if(temp2 >= HTLM[j]->Source && temp2 < HTLM[j]->Source + HTLM[j]->size && !found){
@@ -247,13 +232,13 @@ void getLocation(){
         }
         if (found){temp = temp2;}
         cout << temp << endl;
-        cout << endl;
         if (temp < Lowest){
             Lowest = temp;
         }
     }
     cout << Lowest << endl;
 }
+
 int main(int argc, char * argv[]){
     if (argc > 1){
         for (int i = 1; i < argc; i++){

@@ -101,7 +101,7 @@ bool checkAdjacentTile(int currentRow, int currentColumn){
 string TakeLeftDigit(int i, int j){
     string value = "";
     for (int p = j; p >= 0; p--){
-        if (vT[i][p]->type == "Num" &&!vT[i][p]->isInsert){
+        if (vT[i][p]->type == "Num" && !vT[i][p]->isInsert){
             value += vT[i][p]->value;
             vT[i][p]->isInsert = true;
         } else if(vT[i][p]->type == "Rest" || vT[i][p]->type == "Point"){

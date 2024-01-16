@@ -61,7 +61,6 @@ int readFiles(istream & input, const char * argv){
         newCubes->blue = maxBlue;
         newCubes->green = maxGreen;
         newCubes->red = maxRed;
-        cout << maxRed << " " << maxGreen << " " << maxBlue << endl;
         newDb->cb.push_back(newCubes);
     }
     return 1;
@@ -69,7 +68,6 @@ int readFiles(istream & input, const char * argv){
 
 
 int main(int argc, char * argv[]){
-    cout << argv[1] << endl; 
     if (argc > 1){
         for (int i = 1; i < argc; i++){
             ifstream f(argv[i]);
@@ -87,7 +85,7 @@ int main(int argc, char * argv[]){
     int sumId = 0;
     for (int i = 0; i < newDb->cb.size(); i++){
         /*if (newDb->cb[i]->blue <= 14 && newDb->cb[i]->red <= 12  && newDb->cb[i]->green <= 13){
-            sumId += stoi(newDb->ID[i]); error with the operator (=> instead <=)
+            sumId += stoi(newDb->ID[i]);
         }*/
         sumId += newDb->cb[i]->blue * newDb->cb[i]->red * newDb->cb[i]->green;
     }

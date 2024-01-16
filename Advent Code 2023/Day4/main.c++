@@ -26,15 +26,15 @@ vector<string> initVect(string value){
             } else {
                 tempNum += value[i];
             }
-        }
-        if (tempNum != ""){
-            a.push_back(tempNum);
-        }
+    }
+    if (tempNum != ""){
+        a.push_back(tempNum);
+    }
     return a;
 }
 
 int readFiles(istream & input, const char * argv){
-     string block;
+    string block;
     while(getline(input, block)){
         //take the info to divide the string in three parts
         int posDoublePoint = block.find(":");
@@ -57,10 +57,8 @@ int readFiles(istream & input, const char * argv){
 void totalPoints(){
     int total = 0;
     for (int i = 0; i < points.size(); i++){
-        cout << points[i] << " ";
        /*  if (points[i] > 0){
-            total += pow(2, points[i] - 1);
-            cout << pow(2, points[i] - 1) << endl; =>part one
+            total += pow(2, points[i] - 1); =>part one
         } */
     }
 

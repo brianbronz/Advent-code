@@ -62,9 +62,9 @@ void findPair(){
 
     int total = 0;
     for (int i = 0; i < ps.size() - 1; i++){
+        int x1 = ps[i]->x;
+        int y1 = ps[i]->y;
         for (int j = i + 1; j < ps.size(); j++){
-            int x1 = ps[i]->x;
-            int y1 = ps[i]->y;
             int x2 = ps[j]->x;
             int y2 = ps[j]->y;
             total += abs(x1 - x2) + abs(y1 - y2);

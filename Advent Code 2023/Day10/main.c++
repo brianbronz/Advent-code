@@ -153,7 +153,6 @@ int nextMoves(int direction, vector<struct position *> &a){
     if(cPositionX == initPositionX && cPositionY == initPositionY){
         distance = floor(distance / 2);
     }
-    cout << distance << endl;
     return distance;
 };
 

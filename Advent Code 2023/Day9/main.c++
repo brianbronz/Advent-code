@@ -32,6 +32,7 @@ bool check(vector<int> diff){
     }
     return false;
 }
+
 void differences(){
     vector<vector<int> > diffs;
     vector<int> diff;
